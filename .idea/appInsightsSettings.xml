@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.example.trevello" />
+                  <option name="mobileSdkAppId" value="1:67471367359:android:1f15be14568ec3f7aaba0a" />
+                  <option name="projectId" value="trevello-82c6a" />
+                  <option name="projectNumber" value="67471367359" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

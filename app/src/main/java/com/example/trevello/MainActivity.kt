@@ -1,11 +1,14 @@
 package com.example.trevello
 
+import android.app.ActivityOptions
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import android.widget.Button
-import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.activity.ComponentActivity
 import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -13,9 +16,11 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
-class MainActivity : ComponentActivity() {
+
+class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         window.navigationBarColor = Color.parseColor("#111418")
         window.statusBarColor = Color.parseColor("#111418")
         setContentView(R.layout.activity_main)
@@ -23,21 +28,30 @@ class MainActivity : ComponentActivity() {
         val createAccountButton = findViewById<Button>(R.id.bCreateAccount)
         val loginButton = findViewById<Button>(R.id.bLogin)
 
-        createAccountButton.setOnClickListener {
-//            val intent = Intent(this, LoginActivity::class.java)
-//            startActivity(intent)
-//            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-        }
+        createAccountButton.setOnClickListener {}
 
         loginButton.setOnClickListener {
             // Start the login activity or implement login logic here
             val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left).toBundle()
+            startActivity(intent, options)
+        }
+
+        val btnToggleTheme = findViewById<Button>(R.id.btnToggleTheme)
+        btnToggleTheme.setOnClickListener {
+            when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+                Configuration.UI_MODE_NIGHT_YES -> {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                }
+                Configuration.UI_MODE_NIGHT_NO -> {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                }
+            }
         }
     }
 }
 
+// Code to setup maps
 //class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 //    override fun onCreate(savedInstanceState: Bundle?) {
 //        super.onCreate(savedInstanceState)

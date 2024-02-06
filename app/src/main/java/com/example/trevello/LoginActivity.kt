@@ -1,16 +1,13 @@
 package com.example.trevello
 
-import android.R
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.widget.ArrayAdapter
 import android.widget.EditText
-import androidx.activity.ComponentActivity
-import com.hbb20.CountryCodePicker
+import androidx.appcompat.app.AppCompatActivity
 
-class LoginActivity : ComponentActivity() {
+class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.navigationBarColor = Color.parseColor("#111418")
@@ -37,23 +34,6 @@ class LoginActivity : ComponentActivity() {
                 }
             }
         })
-
-        val ccpSelectCountry = findViewById<CountryCodePicker>(com.example.trevello.R.id.ccpSelectCountry)
-
-        // Get the AutoCompleteTextView from the layout
-//        val typesFilter = findViewById<AutoCompleteTextView>(R.id.types_filter)
-
-// Create a list of items for the dropdown. This could be a static list or dynamic data from a web service.
-        val items = listOf("+108", "+98", "+94")
-
-// Create an ArrayAdapter using the string array and a default spinner layout
-        val adapter = ArrayAdapter(this, R.layout.simple_spinner_dropdown_item, items)
-
-// Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-
-// Apply the adapter to the AutoCompleteTextView
-//        typesFilter.setAdapter(adapter)
     }
 
     private fun isValid(text: String): Boolean {
