@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Trevello</string>
+    <string name="my_api_key">AIzaSyAgpBE3CRoUTPnpuf4pwB-xC8Oicu2OwBw</string>
+    <string name="logo_desc">Logo Description</string>
+    <string name="create_account">Create an Account</string>
+    <string name="login">Login</string>
+    <string-array name="country_code_array">
+        <item>+94</item>
+        <item>+104</item>
+        <item>+98</item>
+    </string-array>
+</resources>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "67471367359",
+    "project_id": "trevello-82c6a",
+    "storage_bucket": "trevello-82c6a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:67471367359:android:1f15be14568ec3f7aaba0a",
+        "android_client_info": {
+          "package_name": "com.example.trevello"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAThlM_sLS-DaMfonUSDC3KlFsarAw7pOY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
