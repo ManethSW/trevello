@@ -5,5 +5,5 @@
     <color name="textColor">#0B171E</color>
     <color name="inputBoxColor">#F7F7F8</color>
     <color name="inputBoxBorderColor">#7F8A90</color>
-    <color name="currentLocationContainerColor">#BFFFFFFF</color>
+    <color name="currentLocationContainerColor">#D9092635</color>
 </resources>

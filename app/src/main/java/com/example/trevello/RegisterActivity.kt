@@ -239,52 +239,61 @@ class RegisterActivity : AppCompatActivity() {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "signInWithCredential:success")
 
+                    val currentUser = auth.currentUser
                     // Store user data in Firestore
                     val userPhoneNumber = etPhoneNumber.text.toString().trimStart('0')
                     val phoneNumber = "+94$userPhoneNumber"
-                    val user = hashMapOf(
-                        "full_name" to etFullName.text.toString(),
-                        "email" to etEmail.text.toString(),
-                        "phone_number" to phoneNumber
-                    )
-                    db.collection("users")
-                        .add(user)
-                        .addOnSuccessListener { documentReference ->
-                            Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+                    if (currentUser != null) {
+                        val user = hashMapOf(
+                            "full_name" to etFullName.text.toString(),
+                            "email" to etEmail.text.toString(),
+                            "phone_number" to phoneNumber
+                        )
+                        db.collection("users")
+                            .document(currentUser.uid)
+                            .set(user)
+                            .addOnSuccessListener {
+                                Log.d(TAG, "DocumentSnapshot added with ID: ${currentUser.uid}")
+                                // Redirect user to login page
+                                val intent = android.content.Intent(this, LoginActivity::class.java)
+                                val options = android.app.ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left).toBundle()
+                                startActivity(intent, options)
+                            }
+                            .addOnFailureListener { e ->
+                                Log.w(TAG, "Error adding document", e)
+                            }
+                    } else {
+                        // Sign in failed, display a message and update the UI
+                        Log.w(TAG, "signInWithCredential:failure", task.exception)
+                        if (task.exception is FirebaseAuthInvalidCredentialsException) {
+                            // The verification code entered was invalid
+                            // ...
                         }
-                        .addOnFailureListener { e ->
-                            Log.w(TAG, "Error adding document", e)
-                        }
-                } else {
-                    // Sign in failed, display a message and update the UI
-                    Log.w(TAG, "signInWithCredential:failure", task.exception)
-                    if (task.exception is FirebaseAuthInvalidCredentialsException) {
-                        // The verification code entered was invalid
-                        // ...
+                        // Update UI
                     }
-                    // Update UI
+                    // Reset the OTP fields
+                    etOTP1.setText("")
+                    etOTP2.setText("")
+                    etOTP3.setText("")
+                    etOTP4.setText("")
+                    etOTP5.setText("")
+                    etOTP6.setText("")
+                    // Disable the OTP fields
+                    etOTP1.isEnabled = false
+                    etOTP2.isEnabled = false
+                    etOTP3.isEnabled = false
+                    etOTP4.isEnabled = false
+                    etOTP5.isEnabled = false
+                    etOTP6.isEnabled = false
+                    // Enable the "Send OTP" button
+                    sendOtpButton.isEnabled = true
                 }
-                // Reset the OTP fields
-                etOTP1.setText("")
-                etOTP2.setText("")
-                etOTP3.setText("")
-                etOTP4.setText("")
-                etOTP5.setText("")
-                etOTP6.setText("")
-                // Disable the OTP fields
-                etOTP1.isEnabled = false
-                etOTP2.isEnabled = false
-                etOTP3.isEnabled = false
-                etOTP4.isEnabled = false
-                etOTP5.isEnabled = false
-                etOTP6.isEnabled = false
-                // Enable the "Send OTP" button
-                sendOtpButton.isEnabled = true
             }
     }
 
     private fun showErrorSnackbar(message: String) {
-        val snackbar = Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG)
+        val snackbar =
+            Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG)
         val params = snackbar.view.layoutParams as FrameLayout.LayoutParams
 
         params.gravity = Gravity.TOP
@@ -315,11 +324,15 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun onOtpCompleted() {
-        // Simple print statement to the console
-        println("OTP has been entered")
-
-        val otp = etOTP1.text.toString() + etOTP2.text.toString() + etOTP3.text.toString() + etOTP4.text.toString() + etOTP5.text.toString() + etOTP6.text.toString()
-        val credential = PhoneAuthProvider.getCredential(storedVerificationId!!, otp)
-        signInWithPhoneAuthCredential(credential)
+        val otp =
+            etOTP1.text.toString() + etOTP2.text.toString() + etOTP3.text.toString() + etOTP4.text.toString() + etOTP5.text.toString() + etOTP6.text.toString()
+        Log.d(TAG, "onOtpCompleted: $otp")
+        if (storedVerificationId != null) {
+            val credential = PhoneAuthProvider.getCredential(storedVerificationId!!, otp)
+            signInWithPhoneAuthCredential(credential)
+        } else {
+            // Handle the case where storedVerificationId is null
+            // For example, show an error message to the user
+        }
     }
 }

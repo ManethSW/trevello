@@ -4,6 +4,7 @@ import android.location.Geocoder
 import java.util.Locale
 import android.Manifest
 import android.content.ContentValues.TAG
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Resources
@@ -80,7 +81,9 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                     true
                 }
                 R.id.menu_profile -> {
-                    // Respond to navigation item 4 click
+                    val intent = Intent(this, ProfileActivity::class.java)
+                    startActivity(intent)
+                    finish()
                     true
                 }
                 else -> false

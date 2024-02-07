@@ -87,6 +87,7 @@ class MainActivity : AppCompatActivity() {
     private fun updateUI(currentUser: FirebaseUser?) {
         if (currentUser != null) {
             // User is signed in, navigate to the HomeActivity
+//            val intent = Intent(this, ProfileActivity::class.java)
             val intent = Intent(this, HomeActivity::class.java)
             startActivity(intent)
             finish()
