@@ -63,26 +63,6 @@ class MainActivity : AppCompatActivity() {
             val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left).toBundle()
             startActivity(intent, options)
         }
-
-        val btnToggleTheme = findViewById<Button>(R.id.btnToggleTheme)
-        btnToggleTheme.setOnClickListener {
-            val mode = when (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
-                Configuration.UI_MODE_NIGHT_YES -> AppCompatDelegate.MODE_NIGHT_NO
-                Configuration.UI_MODE_NIGHT_NO -> AppCompatDelegate.MODE_NIGHT_YES
-                else -> AppCompatDelegate.MODE_NIGHT_NO
-            }
-
-            // Save the new theme in SharedPreferences
-            val editor = sharedPreferences.edit()
-            editor.putInt(KEY_THEME, mode)
-            editor.apply()
-
-            // Apply the new theme
-            AppCompatDelegate.setDefaultNightMode(mode)
-
-            // Recreate all activities
-            recreate()
-        }
     }
     private fun updateUI(currentUser: FirebaseUser?) {
         if (currentUser != null) {
