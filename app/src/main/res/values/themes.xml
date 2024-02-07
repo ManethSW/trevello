@@ -8,5 +8,6 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryVariant">@color/colorSecondary</item>
         <item name="colorOnPrimary">@color/textColor</item>
+        <item name="colorAccent">@color/currentLocationContainerColor</item>
     </style>
 </resources>
