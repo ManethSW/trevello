@@ -3,6 +3,8 @@
 <resources>
     <style name="Theme.Trevello" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Customize your theme here. -->
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowLightStatusBar">true</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryVariant">@color/colorSecondary</item>
         <item name="colorOnPrimary">@color/textColor</item>

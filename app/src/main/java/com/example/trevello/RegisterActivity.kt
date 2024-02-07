@@ -1,9 +1,7 @@
 package com.example.trevello
 
-import android.app.ActivityOptions
-import android.content.ContentValues
+import android.content.ContentValues.TAG
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -31,7 +29,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import java.util.concurrent.TimeUnit
 
-class LoginActivity : AppCompatActivity() {
+class RegisterActivity : AppCompatActivity() {
+    private lateinit var etFullName: EditText
+    private lateinit var etEmail: EditText
     private lateinit var etPhoneNumber: EditText
     private lateinit var llPhoneNumber: LinearLayout
     private lateinit var etOTP1: EditText
@@ -43,16 +43,66 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var sendOtpButton: Button
     private lateinit var bBack: ImageButton
     private lateinit var auth: FirebaseAuth
+    private lateinit var db: FirebaseFirestore
     private var storedVerificationId: String? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.navigationBarColor = ContextCompat.getColor(this, R.color.colorPrimary)
         window.statusBarColor = ContextCompat.getColor(this, R.color.colorSecondary)
-        setContentView(R.layout.activity_login)
+        setContentView(R.layout.activity_register)
 
         auth = Firebase.auth
+        db = Firebase.firestore
+
+        var isFullNameValid = false
+        var isEmailValid = false
         var isPhoneNumberValid = false
+
+        etFullName = findViewById(R.id.etFullName)
+        etFullName.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+                // This method is called to notify you that, within s, the count characters
+                // beginning at start are about to be replaced by new text with length after.
+            }
+
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                // This method is called to notify you that, within s, the count characters
+                // beginning at start have just replaced old text that had length before.
+            }
+
+            override fun afterTextChanged(s: Editable) {
+                if (isValid(s.toString())) {
+                    etFullName.setBackgroundResource(com.example.trevello.R.drawable.input_box_valid)
+                    isFullNameValid = true
+                } else {
+                    etFullName.setBackgroundResource(com.example.trevello.R.drawable.input_box_invalid)
+                    isFullNameValid = false
+                }
+            }
+        })
+
+        etEmail = findViewById(R.id.etEmail)
+        etEmail.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+                // This method is called to notify you that, within s, the count characters
+                // beginning at start are about to be replaced by new text with length after.
+            }
+
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                // This method is called to notify you that, within s, the count characters
+                // beginning at start have just replaced old text that had length before.
+            }
+
+            override fun afterTextChanged(s: Editable) {
+                if (android.util.Patterns.EMAIL_ADDRESS.matcher(s.toString()).matches()) {
+                    etEmail.setBackgroundResource(com.example.trevello.R.drawable.input_box_valid)
+                    isEmailValid = true
+                } else {
+                    etEmail.setBackgroundResource(com.example.trevello.R.drawable.input_box_invalid)
+                    isEmailValid = false
+                }
+            }
+        })
 
         etPhoneNumber = findViewById(R.id.etPhoneNumber)
         llPhoneNumber = findViewById(R.id.llPhoneNumber)
@@ -86,15 +136,22 @@ class LoginActivity : AppCompatActivity() {
         etOTP6 = findViewById(R.id.etOTP6)
         sendOtpButton = findViewById(R.id.bSendOTP)
 
-        sendOtpButton.background = ContextCompat.getDrawable(this, R.drawable.input_box)
 
         val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                // This callback will be invoked in two situations:
+                // 1 - Instant verification. In some cases the phone number can be instantly
+                //     verified without needing to send or enter a verification code.
+                // 2 - Auto-retrieval. On some devices Google Play services can automatically
+                //     detect the incoming verification SMS and perform verification without
+                //     user action.
                 signInWithPhoneAuthCredential(credential)
             }
 
             override fun onVerificationFailed(e: FirebaseException) {
+                // This callback is invoked in an invalid request for verification is made,
+                // for instance if the the phone number format is not valid.
                 showErrorSnackbar("Verification failed: ${e.message}")
             }
 
@@ -108,14 +165,14 @@ class LoginActivity : AppCompatActivity() {
         }
 
         sendOtpButton.setOnClickListener {
-            if (isPhoneNumberValid) {
+            if (isFullNameValid && isEmailValid && isPhoneNumberValid) {
                 val userPhoneNumber = etPhoneNumber.text.toString().trimStart('0')
                 val phoneNumber = "+94$userPhoneNumber"
                 val options = PhoneAuthOptions.newBuilder(auth)
-                    .setPhoneNumber(phoneNumber)
-                    .setTimeout(60L, TimeUnit.SECONDS)
-                    .setActivity(this)
-                    .setCallbacks(callbacks)
+                    .setPhoneNumber(phoneNumber)       // Phone number to verify
+                    .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
+                    .setActivity(this)                 // Activity (for callback binding)
+                    .setCallbacks(callbacks)           // OnVerificationStateChangedCallbacks
                     .build()
                 PhoneAuthProvider.verifyPhoneNumber(options)
                 enableOTPInputs()
@@ -138,14 +195,17 @@ class LoginActivity : AppCompatActivity() {
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
 
                 override fun afterTextChanged(s: Editable) {
+                    // If the length of input is 1, move to the next field
                     if (s.length == 1) {
                         if (index < otpFields.size - 1) {
                             otpFields[index + 1].requestFocus()
                         } else {
+                            // Close the keyboard when the last field is filled
                             val imm =
                                 getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                             imm.hideSoftInputFromWindow(editText.windowToken, 0)
 
+                            // If the last OTP field is filled, call the function
                             if (index == otpFields.size - 1) {
                                 onOtpCompleted()
                             }
@@ -155,6 +215,7 @@ class LoginActivity : AppCompatActivity() {
             })
 
             editText.setOnKeyListener { _, keyCode, event ->
+                // If the field is empty and the backspace key is pressed, move to the previous field
                 if (keyCode == KeyEvent.KEYCODE_DEL && event.action == KeyEvent.ACTION_DOWN && editText.text.isEmpty()) {
                     if (index > 0) {
                         otpFields[index - 1].requestFocus()
@@ -175,29 +236,49 @@ class LoginActivity : AppCompatActivity() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    Log.d(ContentValues.TAG, "signInWithCredential:success")
+                    // Sign in success, update UI with the signed-in user's information
+                    Log.d(TAG, "signInWithCredential:success")
 
-                    val intent = Intent(this, HomeActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left).toBundle()
-                    startActivity(intent, options)
+                    // Store user data in Firestore
+                    val userPhoneNumber = etPhoneNumber.text.toString().trimStart('0')
+                    val phoneNumber = "+94$userPhoneNumber"
+                    val user = hashMapOf(
+                        "full_name" to etFullName.text.toString(),
+                        "email" to etEmail.text.toString(),
+                        "phone_number" to phoneNumber
+                    )
+                    db.collection("users")
+                        .add(user)
+                        .addOnSuccessListener { documentReference ->
+                            Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.w(TAG, "Error adding document", e)
+                        }
                 } else {
-                    Log.w(ContentValues.TAG, "signInWithCredential:failure", task.exception)
+                    // Sign in failed, display a message and update the UI
+                    Log.w(TAG, "signInWithCredential:failure", task.exception)
                     if (task.exception is FirebaseAuthInvalidCredentialsException) {
+                        // The verification code entered was invalid
+                        // ...
                     }
+                    // Update UI
                 }
+                // Reset the OTP fields
                 etOTP1.setText("")
                 etOTP2.setText("")
                 etOTP3.setText("")
                 etOTP4.setText("")
                 etOTP5.setText("")
                 etOTP6.setText("")
+                // Disable the OTP fields
                 etOTP1.isEnabled = false
                 etOTP2.isEnabled = false
                 etOTP3.isEnabled = false
                 etOTP4.isEnabled = false
                 etOTP5.isEnabled = false
                 etOTP6.isEnabled = false
+                // Enable the "Send OTP" button
                 sendOtpButton.isEnabled = true
             }
     }
@@ -217,6 +298,11 @@ class LoginActivity : AppCompatActivity() {
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
     }
 
+    private fun isValid(text: String): Boolean {
+        val words = text.trim().split(" ")
+        return words.size >= 2 && words.all { it.matches(Regex("[a-zA-Z]+")) }
+    }
+
     private fun enableOTPInputs() {
         etOTP1.isEnabled = true
         etOTP2.isEnabled = true
@@ -229,6 +315,9 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun onOtpCompleted() {
+        // Simple print statement to the console
+        println("OTP has been entered")
+
         val otp = etOTP1.text.toString() + etOTP2.text.toString() + etOTP3.text.toString() + etOTP4.text.toString() + etOTP5.text.toString() + etOTP6.text.toString()
         val credential = PhoneAuthProvider.getCredential(storedVerificationId!!, otp)
         signInWithPhoneAuthCredential(credential)
