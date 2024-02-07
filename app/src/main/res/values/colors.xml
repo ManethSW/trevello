@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#FBECE5</color>
-    <color name="colorSecondary">#F6D9CA</color>
+    <color name="colorPrimary">#FFFFFF</color>
+    <color name="colorSecondary">#E1E1E2</color>
     <color name="textColor">#0B171E</color>
+    <color name="inputBoxColor">#F7F7F8</color>
+    <color name="inputBoxBorderColor">#7F8A90</color>
 </resources>

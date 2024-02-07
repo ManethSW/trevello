@@ -3,4 +3,6 @@
     <color name="colorPrimary">#0B171E</color>
     <color name="colorSecondary">#091E29</color>
     <color name="textColor">#FFFFFF</color>
+    <color name="inputBoxColor">#0A1A23</color>
+    <color name="inputBoxBorderColor">#858D91</color>
 </resources>
