@@ -1,5 +1,6 @@
 package com.example.trevello
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
@@ -30,9 +31,14 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var ivTheme: ImageView
     private lateinit var tvTheme: TextView
     private lateinit var switchToggleTheme: SwitchMaterial
+    private lateinit var ibEdit: ImageButton
     private lateinit var ibLogout: ImageButton
     private val PREFS_NAME = "theme_prefs"
     private val KEY_THEME = "theme_key"
+    private var avatar: String? = null
+    private var full_name: String? = null
+    private var email: String? = null
+    private var phone_no: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +54,7 @@ class ProfileActivity : AppCompatActivity() {
         ivTheme = findViewById(R.id.ivTheme)
         tvTheme = findViewById(R.id.tvTheme)
         switchToggleTheme = findViewById(R.id.switchToggleTheme)
+        ibEdit = findViewById(R.id.ibEdit)
         ibLogout = findViewById(R.id.ibLogout)
 
         updateThemeUi(ivTheme, tvTheme)
@@ -112,6 +119,16 @@ class ProfileActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+
+        ibEdit.setOnClickListener {
+            val intent = Intent(this, EditProfileActivity::class.java)
+            intent.putExtra("avatar", avatar)
+            intent.putExtra("full_name", full_name)
+            intent.putExtra("email", email)
+            intent.putExtra("phone_no", phone_no)
+            startActivity(intent)
+            finish()
+        }
     }
 
     private fun fetchDataAndDisplay() {
@@ -121,10 +138,11 @@ class ProfileActivity : AppCompatActivity() {
 
         docRef?.get()?.addOnSuccessListener { document ->
             if (document != null) {
-                val avatar = document.getString("avatar")
-                val name = document.getString("full_name")
-                val email = document.getString("email")
-                updateUI(avatar, name, email)
+                avatar = document.getString("avatar")
+                full_name = document.getString("full_name")
+                email = document.getString("email")
+                phone_no = document.getString("phone_number")
+                updateUI(avatar, full_name, email)
             } else {
                 Log.d("ProfileActivity", "No such document")
             }
@@ -133,7 +151,7 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateUI(avatar: String?, name: String?, email: String?) {
+    private fun updateUI(avatar: String?, full_name: String?, email: String?) {
         if (avatar != null) {
             Glide.with(this)
                 .load(avatar)
@@ -152,7 +170,7 @@ class ProfileActivity : AppCompatActivity() {
             layoutParams.height = (24 * density).toInt()
         }
         imageView.layoutParams = layoutParams
-        tvName.text = name
+        tvName.text = full_name
         tvEmail.text = email
     }
 
