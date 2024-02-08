@@ -77,7 +77,9 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                     true
                 }
                 R.id.menu_add -> {
-                    // Respond to navigation item 3 click
+                    val intent = Intent(this, AddEntryActivity::class.java)
+                    startActivity(intent)
+                    finish()
                     true
                 }
                 R.id.menu_profile -> {

@@ -1,6 +1,500 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    android:paddingHorizontal="30dp"
+    android:paddingTop="30dp"
+    tools:context=".MainActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/llHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <!-- Green circle -->
+                <ImageButton
+                    android:id="@+id/ibBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/rounded_button"
+                    android:paddingHorizontal="35dp"
+                    android:paddingVertical="15dp"
+                    android:src="@drawable/ic_back" />
+
+                <!-- TextView -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:fontFamily="@font/tripsans_bold"
+                    android:gravity="center"
+                    android:letterSpacing="0.1"
+                    android:text="Add Entry"
+                    android:textColor="@color/textColor"
+                    android:textSize="20sp" />
+            </FrameLayout>
+        </LinearLayout>
+
+        <View
+            android:id="@+id/llDivider"
+            android:layout_width="100dp"
+            android:layout_height="5dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/rounded_button"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/llHeader"/>
+
+        <LinearLayout
+            android:id="@+id/llLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/llDivider">
+
+            <TextView
+                android:id="@+id/tvLocationLabel"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:fontFamily="@font/tripsans_bold"
+                android:gravity="start"
+                android:text="Location"
+                android:textColor="@color/textColor"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/tvLocationDesc"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:alpha="0.25"
+                android:fontFamily="@font/tripsans_regular"
+                android:gravity="start"
+                android:text="Choose either current location or set your own"
+                android:textColor="@color/textColor"
+                android:textSize="16sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvLocationDesc">
+
+                <LinearLayout
+                    android:id="@+id/llCurrentLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/input_box"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:alpha="0.5"
+                        android:contentDescription="Current Location"
+                        android:paddingHorizontal="20dp"
+                        android:paddingVertical="15dp"
+                        android:src="@drawable/ic_current_location" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:alpha="0.5"
+                        android:fontFamily="@font/tripsans_medium"
+                        android:gravity="start|center"
+                        android:text="Current"
+                        android:textColor="@color/textColor"
+                        android:textSize="16sp" />
+
+                    <LinearLayout
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_gravity="center"
+                        android:layout_marginRight="20dp"
+                        android:background="@drawable/avatar_container"
+                        android:gravity="center"
+                        android:padding="3dp">
+
+                        <View
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:background="@drawable/green_circle" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="15dp" />
+
+                <LinearLayout
+                    android:id="@+id/llSetLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/input_box"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:alpha="0.5"
+                        android:contentDescription="Current Location"
+                        android:paddingHorizontal="20dp"
+                        android:paddingVertical="15dp"
+                        android:src="@drawable/ic_location" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:alpha="0.5"
+                        android:fontFamily="@font/tripsans_medium"
+                        android:gravity="start|center"
+                        android:text="Set"
+                        android:textColor="@color/textColor"
+                        android:textSize="16sp" />
+
+                    <LinearLayout
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_gravity="center"
+                        android:layout_marginRight="20dp"
+                        android:background="@drawable/avatar_container"
+                        android:gravity="center"
+                        android:padding="3dp">
+
+                        <View
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:background="@null" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/llLocation">
+
+            <TextView
+                android:id="@+id/tvTitleLabel"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:fontFamily="@font/tripsans_bold"
+                android:gravity="start"
+                android:text="Title"
+                android:textColor="@color/textColor"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/tvTitleDesc"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:alpha="0.25"
+                android:fontFamily="@font/tripsans_regular"
+                android:gravity="start"
+                android:text="Give your travel a catchy title to remember"
+                android:textColor="@color/textColor"
+                android:textSize="16sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/input_box">
+
+                <EditText
+                    android:id="@+id/etTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.5"
+                    android:autofillHints="title"
+                    android:background="@null"
+                    android:fontFamily="@font/tripsans_medium"
+                    android:hint="Enter your title here"
+                    android:inputType="text"
+                    android:padding="15dp"
+                    android:textColor="@color/textColor"
+                    android:textColorHint="@color/textColor"
+                    android:textSize="16sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/llTitle">
+
+            <TextView
+                android:id="@+id/tvDescriptionLabel"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:fontFamily="@font/tripsans_bold"
+                android:gravity="start"
+                android:text="Description"
+                android:textColor="@color/textColor"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/tvDescriptionDesc"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:alpha="0.25"
+                android:fontFamily="@font/tripsans_regular"
+                android:gravity="start"
+                android:text="Provide a description of where you travelled to "
+                android:textColor="@color/textColor"
+                android:textSize="16sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/input_box">
+
+                <EditText
+                    android:id="@+id/etDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:alpha="0.5"
+                    android:autofillHints="title"
+                    android:background="@null"
+                    android:fontFamily="@font/tripsans_medium"
+                    android:gravity="start"
+                    android:hint="Enter your description here"
+                    android:inputType="text"
+                    android:padding="15dp"
+                    android:textColor="@color/textColor"
+                    android:textColorHint="@color/textColor"
+                    android:textSize="16sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llImages"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/llDescription">
+
+            <TextView
+                android:id="@+id/tvImagesLabel"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:fontFamily="@font/tripsans_bold"
+                android:gravity="start"
+                android:text="Images"
+                android:textColor="@color/textColor"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/tvImagesDesc"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:alpha="0.25"
+                android:fontFamily="@font/tripsans_regular"
+                android:gravity="start"
+                android:text="Upload pictures of your travel"
+                android:textColor="@color/textColor"
+                android:textSize="16sp" />
+
+            <LinearLayout
+                android:id="@+id/llUploadImages"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/input_box">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:alpha="0.5"
+                    android:contentDescription="Current Location"
+                    android:paddingHorizontal="20dp"
+                    android:paddingVertical="15dp"
+                    android:src="@drawable/ic_uplaod" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:alpha="0.5"
+                    android:fontFamily="@font/tripsans_medium"
+                    android:gravity="start|center"
+                    android:text="Press to upload images"
+                    android:textColor="@color/textColor"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llImagesContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:id="@+id/llImage1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/rounded_button"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:alpha="0.5"
+                            android:fontFamily="@font/tripsans_medium"
+                            android:gravity="start|center"
+                            android:paddingStart="20dp"
+                            android:text="Img 1"
+                            android:textColor="@color/textColor"
+                            android:textSize="16sp" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:alpha="0.5"
+                            android:contentDescription="Current Location"
+                            android:paddingHorizontal="20dp"
+                            android:paddingVertical="15dp"
+                            android:src="@drawable/ic_close" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1" />
+
+                    <LinearLayout
+                        android:id="@+id/llImage2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/rounded_button"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:alpha="0.5"
+                            android:fontFamily="@font/tripsans_medium"
+                            android:gravity="start|center"
+                            android:paddingStart="20dp"
+                            android:text="Img 2"
+                            android:textColor="@color/textColor"
+                            android:textSize="16sp" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:alpha="0.5"
+                            android:contentDescription="Current Location"
+                            android:paddingHorizontal="20dp"
+                            android:paddingVertical="15dp"
+                            android:src="@drawable/ic_close" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1" />
+
+                    <LinearLayout
+                        android:id="@+id/llImage3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/rounded_button"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:alpha="0.5"
+                            android:fontFamily="@font/tripsans_medium"
+                            android:gravity="start|center"
+                            android:paddingStart="20dp"
+                            android:text="Img 3"
+                            android:textColor="@color/textColor"
+                            android:textSize="16sp" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:alpha="0.5"
+                            android:contentDescription="Current Location"
+                            android:paddingHorizontal="20dp"
+                            android:paddingVertical="15dp"
+                            android:src="@drawable/ic_close" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>
