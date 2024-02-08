@@ -244,112 +244,195 @@
         android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@+id/tvSubHeading2">
 
-        <EditText
-            android:id="@+id/etOTP1"
+        <FrameLayout
             android:layout_width="0dp"
             android:layout_height="45dp"
-            android:layout_weight="1"
-            android:autofillHints="oneTimeCode"
-            android:background="@drawable/input_box"
-            android:drawablePadding="10dp"
-            android:enabled="false"
-            android:fontFamily="@font/tripsans_medium"
-            android:gravity="center"
-            android:hint="X"
-            android:inputType="number"
-            android:textColor="@color/textColor"
-            android:textColorHint="@color/inputBoxBorderColor"
-            android:textSize="15sp" />
+            android:layout_weight="1">
 
-        <EditText
-            android:id="@+id/etOTP2"
-            android:layout_width="0dp"
-            android:layout_height="45dp"
-            android:layout_marginStart="10dp"
-            android:layout_weight="1"
-            android:autofillHints="oneTimeCode"
-            android:background="@drawable/input_box"
-            android:drawablePadding="10dp"
-            android:enabled="false"
-            android:fontFamily="@font/tripsans_medium"
-            android:gravity="center"
-            android:hint="X"
-            android:inputType="number"
-            android:textColor="@color/textColor"
-            android:textColorHint="@color/inputBoxBorderColor"
-            android:textSize="15sp" />
+            <EditText
+                android:id="@+id/etOTP1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:autofillHints="oneTimeCode"
+                android:background="@drawable/input_box"
+                android:drawablePadding="10dp"
+                android:enabled="false"
+                android:fontFamily="@font/tripsans_medium"
+                android:gravity="center"
+                android:hint=""
+                android:inputType="number"
+                android:textColor="@color/textColor"
+                android:textColorHint="@color/inputBoxBorderColor"
+                android:textSize="15sp" />
 
-        <EditText
-            android:id="@+id/etOTP3"
+            <ImageView
+                android:id="@+id/ivLock1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.5"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_lock" />
+        </FrameLayout>
+        <View
+            android:layout_width="10dp"
+            android:layout_height="match_parent"/>
+        <FrameLayout
             android:layout_width="0dp"
             android:layout_height="45dp"
-            android:layout_marginStart="10dp"
-            android:layout_weight="1"
-            android:autofillHints="oneTimeCode"
-            android:background="@drawable/input_box"
-            android:drawablePadding="10dp"
-            android:enabled="false"
-            android:fontFamily="@font/tripsans_medium"
-            android:gravity="center"
-            android:hint="X"
-            android:inputType="number"
-            android:textColor="@color/textColor"
-            android:textColorHint="@color/inputBoxBorderColor"
-            android:textSize="15sp" />
+            android:layout_weight="1">
 
-        <EditText
-            android:id="@+id/etOTP4"
-            android:layout_width="0dp"
-            android:layout_height="45dp"
-            android:layout_marginStart="10dp"
-            android:layout_weight="1"
-            android:autofillHints="oneTimeCode"
-            android:background="@drawable/input_box"
-            android:drawablePadding="10dp"
-            android:enabled="false"
-            android:fontFamily="@font/tripsans_medium"
-            android:gravity="center"
-            android:hint="X"
-            android:inputType="number"
-            android:textColor="@color/textColor"
-            android:textColorHint="@color/inputBoxBorderColor"
-            android:textSize="15sp" />
+            <EditText
+                android:id="@+id/etOTP2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:autofillHints="oneTimeCode"
+                android:background="@drawable/input_box"
+                android:drawablePadding="10dp"
+                android:enabled="false"
+                android:fontFamily="@font/tripsans_medium"
+                android:gravity="center"
+                android:hint=""
+                android:inputType="number"
+                android:textColor="@color/textColor"
+                android:textColorHint="@color/inputBoxBorderColor"
+                android:textSize="15sp" />
 
-        <EditText
-            android:id="@+id/etOTP5"
+            <ImageView
+                android:id="@+id/ivLock2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.5"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_lock" />
+        </FrameLayout>
+        <View
+            android:layout_width="10dp"
+            android:layout_height="match_parent"/>
+        <FrameLayout
             android:layout_width="0dp"
             android:layout_height="45dp"
-            android:layout_marginStart="10dp"
-            android:layout_weight="1"
-            android:autofillHints="oneTimeCode"
-            android:background="@drawable/input_box"
-            android:drawablePadding="10dp"
-            android:enabled="false"
-            android:fontFamily="@font/tripsans_medium"
-            android:gravity="center"
-            android:hint="X"
-            android:inputType="number"
-            android:textColor="@color/textColor"
-            android:textColorHint="@color/inputBoxBorderColor"
-            android:textSize="15sp" />
+            android:layout_weight="1">
 
-        <EditText
-            android:id="@+id/etOTP6"
+            <EditText
+                android:id="@+id/etOTP3"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:autofillHints="oneTimeCode"
+                android:background="@drawable/input_box"
+                android:drawablePadding="10dp"
+                android:enabled="false"
+                android:fontFamily="@font/tripsans_medium"
+                android:gravity="center"
+                android:hint=""
+                android:inputType="number"
+                android:textColor="@color/textColor"
+                android:textColorHint="@color/inputBoxBorderColor"
+                android:textSize="15sp" />
+
+            <ImageView
+                android:id="@+id/ivLock3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.5"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_lock" />
+        </FrameLayout>
+        <View
+            android:layout_width="10dp"
+            android:layout_height="match_parent"/>
+        <FrameLayout
             android:layout_width="0dp"
             android:layout_height="45dp"
-            android:layout_marginStart="10dp"
-            android:layout_weight="1"
-            android:autofillHints="oneTimeCode"
-            android:background="@drawable/input_box"
-            android:drawablePadding="10dp"
-            android:enabled="false"
-            android:fontFamily="@font/tripsans_medium"
-            android:gravity="center"
-            android:hint="X"
-            android:inputType="number"
-            android:textColor="@color/textColor"
-            android:textColorHint="@color/inputBoxBorderColor"
-            android:textSize="15sp" />
+            android:layout_weight="1">
+
+            <EditText
+                android:id="@+id/etOTP4"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:autofillHints="oneTimeCode"
+                android:background="@drawable/input_box"
+                android:drawablePadding="10dp"
+                android:enabled="false"
+                android:fontFamily="@font/tripsans_medium"
+                android:gravity="center"
+                android:hint=""
+                android:inputType="number"
+                android:textColor="@color/textColor"
+                android:textColorHint="@color/inputBoxBorderColor"
+                android:textSize="15sp" />
+
+            <ImageView
+                android:id="@+id/ivLock4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.5"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_lock" />
+        </FrameLayout>
+        <View
+            android:layout_width="10dp"
+            android:layout_height="match_parent"/>
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_weight="1">
+
+            <EditText
+                android:id="@+id/etOTP5"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:autofillHints="oneTimeCode"
+                android:background="@drawable/input_box"
+                android:drawablePadding="10dp"
+                android:enabled="false"
+                android:fontFamily="@font/tripsans_medium"
+                android:gravity="center"
+                android:hint=""
+                android:inputType="number"
+                android:textColor="@color/textColor"
+                android:textColorHint="@color/inputBoxBorderColor"
+                android:textSize="15sp" />
+
+            <ImageView
+                android:id="@+id/ivLock5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.5"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_lock" />
+        </FrameLayout>
+        <View
+            android:layout_width="10dp"
+            android:layout_height="match_parent"/>
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_weight="1">
+
+            <EditText
+                android:id="@+id/etOTP6"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:autofillHints="oneTimeCode"
+                android:background="@drawable/input_box"
+                android:drawablePadding="10dp"
+                android:enabled="false"
+                android:fontFamily="@font/tripsans_medium"
+                android:gravity="center"
+                android:hint=""
+                android:inputType="number"
+                android:textColor="@color/textColor"
+                android:textColorHint="@color/inputBoxBorderColor"
+                android:textSize="15sp" />
+
+            <ImageView
+                android:id="@+id/ivLock6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.5"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_lock" />
+        </FrameLayout>
     </LinearLayout>
 
     <androidx.appcompat.widget.AppCompatButton

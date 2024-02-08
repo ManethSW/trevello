@@ -5,6 +5,8 @@ import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -15,6 +17,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -40,9 +43,17 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var etOTP4: EditText
     private lateinit var etOTP5: EditText
     private lateinit var etOTP6: EditText
+    private lateinit var ivLock1: ImageView
+    private lateinit var ivLock2: ImageView
+    private lateinit var ivLock3: ImageView
+    private lateinit var ivLock4: ImageView
+    private lateinit var ivLock5: ImageView
+    private lateinit var ivLock6: ImageView
     private lateinit var sendOtpButton: Button
     private lateinit var bBack: ImageButton
     private lateinit var auth: FirebaseAuth
+    private lateinit var handler: Handler
+    private lateinit var runnable: Runnable
     private var storedVerificationId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,6 +95,12 @@ class LoginActivity : AppCompatActivity() {
         etOTP4 = findViewById(R.id.etOTP4)
         etOTP5 = findViewById(R.id.etOTP5)
         etOTP6 = findViewById(R.id.etOTP6)
+        ivLock1 = findViewById(R.id.ivLock1)
+        ivLock2 = findViewById(R.id.ivLock2)
+        ivLock3 = findViewById(R.id.ivLock3)
+        ivLock4 = findViewById(R.id.ivLock4)
+        ivLock5 = findViewById(R.id.ivLock5)
+        ivLock6 = findViewById(R.id.ivLock6)
         sendOtpButton = findViewById(R.id.bSendOTP)
 
         sendOtpButton.background = ContextCompat.getDrawable(this, R.drawable.input_box)
@@ -95,7 +112,7 @@ class LoginActivity : AppCompatActivity() {
             }
 
             override fun onVerificationFailed(e: FirebaseException) {
-                showErrorSnackbar("Verification failed: ${e.message}")
+                showSnackbar("Verification failed: ${e.message}")
             }
 
             override fun onCodeSent(
@@ -119,8 +136,17 @@ class LoginActivity : AppCompatActivity() {
                     .build()
                 PhoneAuthProvider.verifyPhoneNumber(options)
                 enableOTPInputs()
+
+                // Start the timer when the OTP is sent
+                handler = Handler(Looper.getMainLooper())
+                runnable = Runnable {
+                    resetInputsAndButton()
+                    showSnackbar("OTP verification timed out. Please try again.")
+                }
+                handler.postDelayed(runnable, 60000)
+                showSnackbar("OTP sent successfully. Please check your phone.")
             } else {
-                showErrorSnackbar("Please enter valid details")
+                showSnackbar("Please enter valid details")
             }
         }
 
@@ -175,8 +201,9 @@ class LoginActivity : AppCompatActivity() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
+                    handler.removeCallbacks(runnable) // remove the scheduled task if OTP verification is successful
                     Log.d(ContentValues.TAG, "signInWithCredential:success")
-
+                    showSnackbar("OTP verification successful. Redirecting...")
                     val intent = Intent(this, HomeActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left).toBundle()
@@ -184,26 +211,43 @@ class LoginActivity : AppCompatActivity() {
                 } else {
                     Log.w(ContentValues.TAG, "signInWithCredential:failure", task.exception)
                     if (task.exception is FirebaseAuthInvalidCredentialsException) {
+                        showSnackbar("OTP verification failed. Please try again.")
                     }
                 }
-                etOTP1.setText("")
-                etOTP2.setText("")
-                etOTP3.setText("")
-                etOTP4.setText("")
-                etOTP5.setText("")
-                etOTP6.setText("")
-                etOTP1.isEnabled = false
-                etOTP2.isEnabled = false
-                etOTP3.isEnabled = false
-                etOTP4.isEnabled = false
-                etOTP5.isEnabled = false
-                etOTP6.isEnabled = false
-                sendOtpButton.isEnabled = true
             }
     }
 
-    private fun showErrorSnackbar(message: String) {
-        val snackbar = Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG)
+    private fun resetInputsAndButton() {
+        etOTP1.setText("")
+        etOTP2.setText("")
+        etOTP3.setText("")
+        etOTP4.setText("")
+        etOTP5.setText("")
+        etOTP6.setText("")
+        etOTP1.hint = ""
+        etOTP2.hint = ""
+        etOTP3.hint = ""
+        etOTP4.hint = ""
+        etOTP5.hint = ""
+        etOTP6.hint = ""
+        ivLock1.visibility = ImageButton.VISIBLE
+        ivLock2.visibility = ImageButton.VISIBLE
+        ivLock3.visibility = ImageButton.VISIBLE
+        ivLock4.visibility = ImageButton.VISIBLE
+        ivLock5.visibility = ImageButton.VISIBLE
+        ivLock6.visibility = ImageButton.VISIBLE
+        etOTP1.isEnabled = false
+        etOTP2.isEnabled = false
+        etOTP3.isEnabled = false
+        etOTP4.isEnabled = false
+        etOTP5.isEnabled = false
+        etOTP6.isEnabled = false
+        sendOtpButton.isEnabled = true
+    }
+
+    private fun showSnackbar(message: String) {
+        val snackbar =
+            Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG)
         val params = snackbar.view.layoutParams as FrameLayout.LayoutParams
 
         params.gravity = Gravity.TOP
@@ -224,8 +268,19 @@ class LoginActivity : AppCompatActivity() {
         etOTP4.isEnabled = true
         etOTP5.isEnabled = true
         etOTP6.isEnabled = true
-
         sendOtpButton.isEnabled = false
+        ivLock1.visibility = ImageButton.GONE
+        ivLock2.visibility = ImageButton.GONE
+        ivLock3.visibility = ImageButton.GONE
+        ivLock4.visibility = ImageButton.GONE
+        ivLock5.visibility = ImageButton.GONE
+        ivLock6.visibility = ImageButton.GONE
+        etOTP1.hint = "•"
+        etOTP2.hint = "•"
+        etOTP3.hint = "•"
+        etOTP4.hint = "•"
+        etOTP5.hint = "•"
+        etOTP6.hint = "•"
     }
 
     private fun onOtpCompleted() {

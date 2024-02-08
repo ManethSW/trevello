@@ -3,6 +3,8 @@ package com.example.trevello
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -13,6 +15,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -40,10 +43,18 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var etOTP4: EditText
     private lateinit var etOTP5: EditText
     private lateinit var etOTP6: EditText
+    private lateinit var ivLock1: ImageView
+    private lateinit var ivLock2: ImageView
+    private lateinit var ivLock3: ImageView
+    private lateinit var ivLock4: ImageView
+    private lateinit var ivLock5: ImageView
+    private lateinit var ivLock6: ImageView
     private lateinit var sendOtpButton: Button
     private lateinit var bBack: ImageButton
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
+    private lateinit var handler: Handler
+    private lateinit var runnable: Runnable
     private var storedVerificationId: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -134,6 +145,12 @@ class RegisterActivity : AppCompatActivity() {
         etOTP4 = findViewById(R.id.etOTP4)
         etOTP5 = findViewById(R.id.etOTP5)
         etOTP6 = findViewById(R.id.etOTP6)
+        ivLock1 = findViewById(R.id.ivLock1)
+        ivLock2 = findViewById(R.id.ivLock2)
+        ivLock3 = findViewById(R.id.ivLock3)
+        ivLock4 = findViewById(R.id.ivLock4)
+        ivLock5 = findViewById(R.id.ivLock5)
+        ivLock6 = findViewById(R.id.ivLock6)
         sendOtpButton = findViewById(R.id.bSendOTP)
 
 
@@ -168,14 +185,32 @@ class RegisterActivity : AppCompatActivity() {
             if (isFullNameValid && isEmailValid && isPhoneNumberValid) {
                 val userPhoneNumber = etPhoneNumber.text.toString().trimStart('0')
                 val phoneNumber = "+94$userPhoneNumber"
-                val options = PhoneAuthOptions.newBuilder(auth)
-                    .setPhoneNumber(phoneNumber)       // Phone number to verify
-                    .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
-                    .setActivity(this)                 // Activity (for callback binding)
-                    .setCallbacks(callbacks)           // OnVerificationStateChangedCallbacks
-                    .build()
-                PhoneAuthProvider.verifyPhoneNumber(options)
-                enableOTPInputs()
+                db.collection("registered_phone_numbers")
+                    .document(phoneNumber)
+                    .get()
+                    .addOnSuccessListener { document ->
+                        if (document.exists()) {
+                            showErrorSnackbar("Phone number already in use.")
+                        } else {
+                            val options = PhoneAuthOptions.newBuilder(auth)
+                                .setPhoneNumber(phoneNumber)       // Phone number to verify
+                                .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
+                                .setActivity(this)                 // Activity (for callback binding)
+                                .setCallbacks(callbacks)           // OnVerificationStateChangedCallbacks
+                                .build()
+                            PhoneAuthProvider.verifyPhoneNumber(options)
+                            enableOTPInputs()
+                            handler = Handler(Looper.getMainLooper())
+                            runnable = Runnable {
+                                resetInputsAndButton()
+                                showSnackbar("OTP verification timed out. Please try again.")
+                            }
+                            handler.postDelayed(runnable, 60000)
+                        }
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.w(TAG, "Error checking phone number in collection", exception)
+                    }
             } else {
                 showErrorSnackbar("Please enter valid details")
             }
@@ -254,10 +289,27 @@ class RegisterActivity : AppCompatActivity() {
                             .set(user)
                             .addOnSuccessListener {
                                 Log.d(TAG, "DocumentSnapshot added with ID: ${currentUser.uid}")
-                                // Redirect user to login page
+                                db.collection("registered_phone_numbers")
+                                    .document(phoneNumber)
+                                    .set(hashMapOf("phone_number" to phoneNumber))
+                                    .addOnSuccessListener {
+                                        Log.d(
+                                            TAG,
+                                            "Phone number added to registered_phone_numbers collection."
+                                        )
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.w(TAG, "Error adding phone number to collection", e)
+                                    }
+                                showSnackbar("OTP verification successful. Redirecting...")
                                 val intent = android.content.Intent(this, LoginActivity::class.java)
-                                val options = android.app.ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left).toBundle()
+                                val options = android.app.ActivityOptions.makeCustomAnimation(
+                                    this,
+                                    R.anim.slide_in_right,
+                                    R.anim.slide_out_left
+                                ).toBundle()
                                 startActivity(intent, options)
+                                showSnackbar("Please Login to continue")
                             }
                             .addOnFailureListener { e ->
                                 Log.w(TAG, "Error adding document", e)
@@ -266,27 +318,10 @@ class RegisterActivity : AppCompatActivity() {
                         // Sign in failed, display a message and update the UI
                         Log.w(TAG, "signInWithCredential:failure", task.exception)
                         if (task.exception is FirebaseAuthInvalidCredentialsException) {
-                            // The verification code entered was invalid
-                            // ...
+                            showSnackbar("OTP verification failed. Please try again.")
                         }
                         // Update UI
                     }
-                    // Reset the OTP fields
-                    etOTP1.setText("")
-                    etOTP2.setText("")
-                    etOTP3.setText("")
-                    etOTP4.setText("")
-                    etOTP5.setText("")
-                    etOTP6.setText("")
-                    // Disable the OTP fields
-                    etOTP1.isEnabled = false
-                    etOTP2.isEnabled = false
-                    etOTP3.isEnabled = false
-                    etOTP4.isEnabled = false
-                    etOTP5.isEnabled = false
-                    etOTP6.isEnabled = false
-                    // Enable the "Send OTP" button
-                    sendOtpButton.isEnabled = true
                 }
             }
     }
@@ -312,6 +347,45 @@ class RegisterActivity : AppCompatActivity() {
         return words.size >= 2 && words.all { it.matches(Regex("[a-zA-Z]+")) }
     }
 
+    private fun resetInputsAndButton() {
+        etOTP1.setText("")
+        etOTP2.setText("")
+        etOTP3.setText("")
+        etOTP4.setText("")
+        etOTP5.setText("")
+        etOTP6.setText("")
+        etOTP1.hint = ""
+        etOTP2.hint = ""
+        etOTP3.hint = ""
+        etOTP4.hint = ""
+        etOTP5.hint = ""
+        etOTP6.hint = ""
+        ivLock1.visibility = ImageButton.VISIBLE
+        ivLock2.visibility = ImageButton.VISIBLE
+        ivLock3.visibility = ImageButton.VISIBLE
+        ivLock4.visibility = ImageButton.VISIBLE
+        ivLock5.visibility = ImageButton.VISIBLE
+        ivLock6.visibility = ImageButton.VISIBLE
+        etOTP1.isEnabled = false
+        etOTP2.isEnabled = false
+        etOTP3.isEnabled = false
+        etOTP4.isEnabled = false
+        etOTP5.isEnabled = false
+        etOTP6.isEnabled = false
+        sendOtpButton.isEnabled = true
+    }
+
+    private fun showSnackbar(message: String) {
+        val snackbar =
+            Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG)
+        val params = snackbar.view.layoutParams as FrameLayout.LayoutParams
+
+        params.gravity = Gravity.TOP
+        snackbar.view.layoutParams = params
+        snackbar.show()
+        snackbar.view.postDelayed({ snackbar.dismiss() }, 4000)
+    }
+
     private fun enableOTPInputs() {
         etOTP1.isEnabled = true
         etOTP2.isEnabled = true
@@ -319,8 +393,19 @@ class RegisterActivity : AppCompatActivity() {
         etOTP4.isEnabled = true
         etOTP5.isEnabled = true
         etOTP6.isEnabled = true
-
         sendOtpButton.isEnabled = false
+        ivLock1.visibility = ImageButton.GONE
+        ivLock2.visibility = ImageButton.GONE
+        ivLock3.visibility = ImageButton.GONE
+        ivLock4.visibility = ImageButton.GONE
+        ivLock5.visibility = ImageButton.GONE
+        ivLock6.visibility = ImageButton.GONE
+        etOTP1.hint = "•"
+        etOTP2.hint = "•"
+        etOTP3.hint = "•"
+        etOTP4.hint = "•"
+        etOTP5.hint = "•"
+        etOTP6.hint = "•"
     }
 
     private fun onOtpCompleted() {
@@ -331,8 +416,7 @@ class RegisterActivity : AppCompatActivity() {
             val credential = PhoneAuthProvider.getCredential(storedVerificationId!!, otp)
             signInWithPhoneAuthCredential(credential)
         } else {
-            // Handle the case where storedVerificationId is null
-            // For example, show an error message to the user
+            showSnackbar("An error occurred. Please try again.")
         }
     }
 }
