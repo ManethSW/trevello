@@ -1,15 +1,12 @@
 package com.example.trevello
 
-import android.app.ActivityOptions
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.Switch
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -32,6 +29,7 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var tvTheme: TextView
     private lateinit var switchToggleTheme: SwitchMaterial
     private lateinit var ibEdit: ImageButton
+    private lateinit var ibEditPhone: ImageButton
     private lateinit var ibLogout: ImageButton
     private val PREFS_NAME = "theme_prefs"
     private val KEY_THEME = "theme_key"
@@ -55,6 +53,7 @@ class ProfileActivity : AppCompatActivity() {
         tvTheme = findViewById(R.id.tvTheme)
         switchToggleTheme = findViewById(R.id.switchToggleTheme)
         ibEdit = findViewById(R.id.ibEdit)
+        ibEditPhone = findViewById(R.id.ibEditPhone)
         ibLogout = findViewById(R.id.ibLogout)
 
         updateThemeUi(ivTheme, tvTheme)
@@ -125,6 +124,13 @@ class ProfileActivity : AppCompatActivity() {
             intent.putExtra("avatar", avatar)
             intent.putExtra("full_name", full_name)
             intent.putExtra("email", email)
+            startActivity(intent)
+            finish()
+        }
+
+        ibEditPhone.setOnClickListener {
+            val intent = Intent(this, EditPhoneNumberActivity::class.java)
+            intent.putExtra("avatar", avatar)
             intent.putExtra("phone_no", phone_no)
             startActivity(intent)
             finish()

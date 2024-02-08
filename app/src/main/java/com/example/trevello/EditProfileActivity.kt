@@ -1,8 +1,10 @@
 package com.example.trevello
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -21,6 +23,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
+import java.io.ByteArrayOutputStream
 
 class EditProfileActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
@@ -34,6 +37,7 @@ class EditProfileActivity : AppCompatActivity() {
     private var isEmailValid = false
     private var newAvatarUri: Uri? = null
     private val IMAGE_PICK_CODE = 1000
+    private val CAMERA_REQUEST_CODE = 2000
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -142,7 +146,8 @@ class EditProfileActivity : AppCompatActivity() {
         }
 
         imageView.setOnClickListener {
-            openImageChooser()
+//            openImageChooser()
+            openCamera()
         }
 
         bSave.setOnClickListener {
@@ -152,6 +157,10 @@ class EditProfileActivity : AppCompatActivity() {
             }
             if (isEmailValid) {
                 user["email"] = etEmail.text.toString()
+            }
+
+            newAvatarUri?.let {
+                uploadImageToFirebase(it)
             }
 
             val db = FirebaseFirestore.getInstance()
@@ -165,10 +174,6 @@ class EditProfileActivity : AppCompatActivity() {
                     .addOnFailureListener { e ->
                         Log.w("EditProfileActivity", "Error writing document", e)
                     }
-            }
-
-            newAvatarUri?.let {
-                uploadImageToFirebase(it)
             }
 
             navigateToProfile(newAvatarUri)
@@ -218,9 +223,15 @@ class EditProfileActivity : AppCompatActivity() {
         startActivityForResult(intent, IMAGE_PICK_CODE)
     }
 
+    private fun openCamera() {
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        startActivityForResult(intent, CAMERA_REQUEST_CODE)
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == IMAGE_PICK_CODE && resultCode == RESULT_OK && data != null) {
+            // Handle image pick result
             newAvatarUri = data.data
             newAvatarUri?.let {
                 Glide.with(this)
@@ -228,7 +239,25 @@ class EditProfileActivity : AppCompatActivity() {
                     .circleCrop()
                     .into(imageView)
             }
+        } else if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+            // Handle camera result
+            val bitmap = data.extras?.get("data") as Bitmap
+            // Convert bitmap to Uri
+            newAvatarUri = bitmapToUri(bitmap)
+            newAvatarUri?.let {
+                Glide.with(this)
+                    .load(it)
+                    .circleCrop()
+                    .into(imageView)
+            }
         }
+    }
+
+    private fun bitmapToUri(bitmap: Bitmap): Uri {
+        val bytes = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
+        val path = MediaStore.Images.Media.insertImage(contentResolver, bitmap, "Title", null)
+        return Uri.parse(path)
     }
 
     private fun uploadImageToFirebase(imageUri: Uri) {

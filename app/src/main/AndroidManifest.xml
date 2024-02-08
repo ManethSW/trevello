@@ -48,6 +48,9 @@
         <activity
             android:name=".EditProfileActivity"
             android:theme="@style/Theme.Trevello"/>
+        <activity
+            android:name=".EditPhoneNumberActivity"
+            android:theme="@style/Theme.Trevello"/>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/my_api_key" />

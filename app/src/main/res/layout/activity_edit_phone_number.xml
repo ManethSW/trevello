@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:id="@+id/llAvatar"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@drawable/avatar_container"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="5dp"
+        android:layout_marginTop="50dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/ivProfile"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/user"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvHeading" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvSubHeading1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25sp"
+        android:alpha="0.5"
+        android:drawableEnd="@drawable/chevron_down"
+        android:drawablePadding="10dp"
+        android:fontFamily="@font/tripsans_regular"
+        android:text="Enter your phone number below to change"
+        android:textColor="@color/textColor"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llAvatar" />
+
+
+    <FrameLayout
+        android:id="@+id/flPhoneNumber1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="32.5dp"
+        android:layout_marginEnd="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvSubHeading1">
+
+        <LinearLayout
+            android:id="@+id/llPhoneNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12.5dp"
+            android:background="@drawable/input_box"
+            android:orientation="horizontal"
+            android:paddingStart="15dp"
+            app:layout_constraintTop_toBottomOf="@+id/flEmail">
+
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:contentDescription="Flag"
+                android:src="@drawable/srilankan_flag" />
+
+            <TextView
+                android:id="@+id/tvCountry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:alpha="0.5"
+                android:drawablePadding="10dp"
+                android:fontFamily="@font/tripsans_regular"
+                android:text="+94"
+                android:textColor="@color/textColor"
+                android:textSize="15sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/flPhoneNumber" />
+
+            <TextView
+                android:id="@+id/tvCircle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:alpha="0.5"
+                android:drawablePadding="10dp"
+                android:fontFamily="@font/tripsans_regular"
+                android:text="•"
+                android:textColor="@color/textColor"
+                android:textSize="15sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/flPhoneNumber" />
+
+            <EditText
+                android:id="@+id/etPhoneNumber"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:autofillHints="phone"
+                android:background="@null"
+                android:fontFamily="@font/tripsans_medium"
+                android:hint="07XXXXXXXX"
+                android:inputType="phone"
+                android:padding="15dp"
+                android:textColor="@color/textColor"
+                android:textColorHint="@color/inputBoxBorderColor"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvPhoneNumberLabel1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:alpha="0.75"
+            android:background="@drawable/label_background"
+            android:fontFamily="@font/tripsans_bold"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:text="Phone Number"
+            android:textColor="@color/textColor"
+            android:textSize="17.5sp" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tvSubHeading2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32.5dp"
+        android:layout_marginBottom="25dp"
+        android:alpha="0.5"
+        android:fontFamily="@font/tripsans_regular"
+        android:text="Enter the OTP code sent your number"
+        android:textColor="@color/textColor"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/flPhoneNumber1" />
+
+    <LinearLayout
+        android:id="@+id/flOTP"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="30dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/tvSubHeading2">
+
+        <EditText
+            android:id="@+id/etOTP1"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_weight="1"
+            android:autofillHints="oneTimeCode"
+            android:background="@drawable/input_box"
+            android:drawablePadding="10dp"
+            android:enabled="false"
+            android:fontFamily="@font/tripsans_medium"
+            android:gravity="center"
+            android:hint="X"
+            android:inputType="number"
+            android:textColor="@color/textColor"
+            android:textColorHint="@color/inputBoxBorderColor"
+            android:textSize="15sp" />
+
+        <EditText
+            android:id="@+id/etOTP2"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:autofillHints="oneTimeCode"
+            android:background="@drawable/input_box"
+            android:drawablePadding="10dp"
+            android:enabled="false"
+            android:fontFamily="@font/tripsans_medium"
+            android:gravity="center"
+            android:hint="X"
+            android:inputType="number"
+            android:textColor="@color/textColor"
+            android:textColorHint="@color/inputBoxBorderColor"
+            android:textSize="15sp" />
+
+        <EditText
+            android:id="@+id/etOTP3"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:autofillHints="oneTimeCode"
+            android:background="@drawable/input_box"
+            android:drawablePadding="10dp"
+            android:enabled="false"
+            android:fontFamily="@font/tripsans_medium"
+            android:gravity="center"
+            android:hint="X"
+            android:inputType="number"
+            android:textColor="@color/textColor"
+            android:textColorHint="@color/inputBoxBorderColor"
+            android:textSize="15sp" />
+
+        <EditText
+            android:id="@+id/etOTP4"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:autofillHints="oneTimeCode"
+            android:background="@drawable/input_box"
+            android:drawablePadding="10dp"
+            android:enabled="false"
+            android:fontFamily="@font/tripsans_medium"
+            android:gravity="center"
+            android:hint="X"
+            android:inputType="number"
+            android:textColor="@color/textColor"
+            android:textColorHint="@color/inputBoxBorderColor"
+            android:textSize="15sp" />
+
+        <EditText
+            android:id="@+id/etOTP5"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:autofillHints="oneTimeCode"
+            android:background="@drawable/input_box"
+            android:drawablePadding="10dp"
+            android:enabled="false"
+            android:fontFamily="@font/tripsans_medium"
+            android:gravity="center"
+            android:hint="X"
+            android:inputType="number"
+            android:textColor="@color/textColor"
+            android:textColorHint="@color/inputBoxBorderColor"
+            android:textSize="15sp" />
+
+        <EditText
+            android:id="@+id/etOTP6"
+            android:layout_width="0dp"
+            android:layout_height="45dp"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:autofillHints="oneTimeCode"
+            android:background="@drawable/input_box"
+            android:drawablePadding="10dp"
+            android:enabled="false"
+            android:fontFamily="@font/tripsans_medium"
+            android:gravity="center"
+            android:hint="X"
+            android:inputType="number"
+            android:textColor="@color/textColor"
+            android:textColorHint="@color/inputBoxBorderColor"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/bSendOTP"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="32.5dp"
+        android:layout_marginEnd="30dp"
+        android:background="@drawable/input_box"
+        android:fontFamily="@font/tripsans_bold"
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:text="Send OTP"
+        android:textAllCaps="false"
+        android:textColor="@color/textColor"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/flOTP" />
+
+
+
+    <LinearLayout
+        android:id="@+id/llLogout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageButton
+            android:id="@+id/ibBack"
+            android:contentDescription="Back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingHorizontal="35dp"
+            android:paddingVertical="20dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/rounded_button"
+            android:src="@drawable/ic_back" />
+
+    </LinearLayout>
+
+    <include layout="@layout/bottom_navigation" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

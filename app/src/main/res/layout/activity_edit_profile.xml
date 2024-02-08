@@ -171,8 +171,9 @@
             android:drawablePadding="20dp"
             android:fontFamily="@font/tripsans_medium"
             android:paddingHorizontal="35dp"
-            android:paddingVertical="15dp"
+            android:paddingVertical="12.5dp"
             android:text="Save"
+            android:textAllCaps="false"
             android:textColor="#259F6C"
             android:textSize="18sp" />
     </LinearLayout>
