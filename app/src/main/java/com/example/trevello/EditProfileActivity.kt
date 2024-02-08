@@ -8,10 +8,13 @@ import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.LayoutInflater
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
@@ -114,8 +117,32 @@ class EditProfileActivity : AppCompatActivity() {
         }
 
         imageView.setOnClickListener {
-//            openImageChooser()
-            openCamera()
+            // Inflate the custom layout
+            val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_layout, null)
+
+            // Create an AlertDialog.Builder and set the view
+            val builder = AlertDialog.Builder(this, R.style.CustomAlertDialog)
+            builder.setView(dialogView)
+
+            // Create the AlertDialog
+            val alertDialog = builder.create()
+
+            // Get the custom AlertDialog buttons and set their onClickListeners
+            val btnTakePhoto = dialogView.findViewById<Button>(R.id.btnTakePhoto)
+            val btnChooseFromGallery = dialogView.findViewById<Button>(R.id.btnChooseFromGallery)
+
+            btnTakePhoto.setOnClickListener {
+                openCamera()
+                alertDialog.dismiss() // Close the dialog
+            }
+
+            btnChooseFromGallery.setOnClickListener {
+                openImageChooser()
+                alertDialog.dismiss() // Close the dialog
+            }
+
+            // Show the AlertDialog
+            alertDialog.show()
         }
 
         bSave.setOnClickListener {
@@ -178,9 +205,6 @@ class EditProfileActivity : AppCompatActivity() {
 
     private fun navigateToProfile(newAvatarUri: Uri? = null) {
         val intent = Intent(this, ProfileActivity::class.java)
-        newAvatarUri?.let {
-            intent.putExtra("newAvatarUri", it.toString())
-        }
         startActivity(intent)
         finish()
     }

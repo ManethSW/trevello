@@ -122,7 +122,6 @@ class ProfileActivity : AppCompatActivity() {
             intent.putExtra("full_name", full_name)
             intent.putExtra("email", email)
             startActivity(intent)
-            finish()
         }
 
         ibEditPhone.setOnClickListener {
@@ -139,18 +138,21 @@ class ProfileActivity : AppCompatActivity() {
         val db = FirebaseFirestore.getInstance()
         val docRef = currentUser?.let { db.collection("users").document(it.uid) }
 
-        docRef?.get()?.addOnSuccessListener { document ->
-            if (document != null) {
-                avatar = document.getString("avatar")
-                full_name = document.getString("full_name")
-                email = document.getString("email")
-                phone_no = document.getString("phone_number")
+        docRef?.addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                Log.w("ProfileActivity", "Listen failed.", e)
+                return@addSnapshotListener
+            }
+
+            if (snapshot != null && snapshot.exists()) {
+                avatar = snapshot.getString("avatar")
+                full_name = snapshot.getString("full_name")
+                email = snapshot.getString("email")
+                phone_no = snapshot.getString("phone_number")
                 updateUI(avatar, full_name, email)
             } else {
-                Log.d("ProfileActivity", "No such document")
+                Log.d("ProfileActivity", "Current data: null")
             }
-        }?.addOnFailureListener { exception ->
-            Log.d("ProfileActivity", "get failed with ", exception)
         }
     }
 

@@ -10,6 +10,13 @@
         <item name="colorOnPrimary">@color/textColor</item>
         <item name="colorAccent">@color/currentLocationContainerColor</item>
         <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
+        <item name="android:windowBackground">@color/colorPrimary</item>
+    </style>
+
+    <style name="CustomAlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorAccent">@color/colorSecondary</item> <!-- Button color -->
+        <item name="android:textColorPrimary">@color/textColor</item> <!-- Title and message color -->
+        <item name="android:background">@color/colorPrimary</item> <!-- Background color -->
     </style>
 
     <style name="AppBottomSheetDialogTheme"

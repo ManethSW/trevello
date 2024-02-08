@@ -149,32 +149,39 @@
         <ImageButton
             android:id="@+id/ibBack"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_vertical"
-            android:background="@drawable/rounded_button"
-            android:contentDescription="Back"
-            android:paddingHorizontal="35dp"
-            android:src="@drawable/ic_back" />
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:background="@drawable/rounded_corners"
+            android:paddingStart="40dp"
+            android:paddingEnd="45dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="25dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_back"
+            app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="10dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="start" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/bSave"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/rounded_button"
-            android:drawableStart="@drawable/ic_save"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:background="@drawable/rounded_corners"
+            android:drawableStart="@drawable/ic_uplaod"
             android:drawablePadding="20dp"
             android:fontFamily="@font/tripsans_medium"
             android:paddingHorizontal="35dp"
-            android:paddingVertical="12.5dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="15dp"
             android:text="Save"
             android:textAllCaps="false"
-            android:textColor="#259F6C"
+            android:textColor="@color/textColor"
             android:textSize="18sp" />
     </LinearLayout>
 
