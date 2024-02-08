@@ -91,10 +91,6 @@ class AddEntryActivity : AppCompatActivity() {
                     finish()
                     true
                 }
-                R.id.menu_activity -> {
-                    // Respond to navigation item 2 click
-                    true
-                }
                 R.id.menu_add -> {
                     true
                 }

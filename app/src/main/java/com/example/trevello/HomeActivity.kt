@@ -79,10 +79,6 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                     // Respond to navigation item 1 click
                     true
                 }
-                R.id.menu_activity -> {
-                    // Respond to navigation item 2 click
-                    true
-                }
                 R.id.menu_add -> {
                     val intent = Intent(this, AddEntryActivity::class.java)
                     startActivity(intent)
@@ -130,7 +126,29 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                     val latLng = LatLng(location!!.latitude, location.longitude)
 
                     // Add a marker to the map at the LatLng position with the title
-                    googleMap!!.addMarker(MarkerOptions().position(latLng).title(title))
+                    val marker = googleMap!!.addMarker(MarkerOptions().position(latLng).title(title))
+                    if (marker != null) {
+                        marker.tag = document.id
+                    }
+                }
+
+                googleMap!!.setOnMarkerClickListener { marker ->
+                    val tag = marker.tag
+                    if (tag == null) {
+                        Log.w(TAG, "Marker tag is null")
+                        return@setOnMarkerClickListener true
+                    }
+
+                    val documentId = tag as String
+                    entriesRef.document(documentId).get().addOnSuccessListener { document ->
+                        val title = document.getString("title")
+                        val location = document.getString("address") // Assuming the document has a "location" field
+                        val description = document.getString("description")
+                        val images = document.get("images") as ArrayList<String> // Use get method to retrieve the ArrayList
+                        val dialog = MarkerInfoDialogFragment.newInstance(title!!, location!!, description!!, images)
+                        dialog.show(supportFragmentManager, "MarkerInfoDialogFragment") // Make sure to pass the required parameters to the show method
+                    }
+                    true
                 }
             } else {
                 Log.d(TAG, "Current data: null")

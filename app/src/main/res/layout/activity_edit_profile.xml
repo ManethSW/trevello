@@ -142,18 +142,18 @@
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
         <ImageButton
             android:id="@+id/ibBack"
-            android:contentDescription="Back"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:paddingHorizontal="35dp"
             android:layout_gravity="center_vertical"
             android:background="@drawable/rounded_button"
+            android:contentDescription="Back"
+            android:paddingHorizontal="35dp"
             android:src="@drawable/ic_back" />
 
         <LinearLayout
@@ -177,7 +177,5 @@
             android:textColor="#259F6C"
             android:textSize="18sp" />
     </LinearLayout>
-
-    <include layout="@layout/bottom_navigation" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

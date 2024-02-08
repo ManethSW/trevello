@@ -107,38 +107,6 @@ class EditProfileActivity : AppCompatActivity() {
             }
         })
 
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
-        if (savedInstanceState == null) {
-            bottomNavigationView.selectedItemId = R.id.menu_profile
-        }
-        bottomNavigationView.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.menu_home -> {
-                    val intent = Intent(this, HomeActivity::class.java)
-                    startActivity(intent)
-                    finish()
-                    true
-                }
-
-                R.id.menu_activity -> {
-                    true
-                }
-
-                R.id.menu_add -> {
-                    true
-                }
-
-                R.id.menu_profile -> {
-                    val intent = Intent(this, ProfileActivity::class.java)
-                    startActivity(intent)
-                    finish()
-                    true
-                }
-
-                else -> false
-            }
-        }
-
         ibBack.setOnClickListener {
             val intent = Intent(this, ProfileActivity::class.java)
             startActivity(intent)

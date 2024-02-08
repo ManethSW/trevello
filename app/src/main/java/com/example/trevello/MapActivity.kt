@@ -55,10 +55,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
 
         // Initialize the SDK
-        Places.initialize(applicationContext, getString(R.string.my_api_key))
+//        Places.initialize(applicationContext, getString(R.string.my_api_key))
 
         // Create a new Places client instance
-        val placesClient = Places.createClient(this)
+//        val placesClient = Places.createClient(this)
 
         val autocompleteFragment = supportFragmentManager
             .findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment
