@@ -24,9 +24,12 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var googleMap: GoogleMap? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,11 +38,17 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         window.statusBarColor = ContextCompat.getColor(this, R.color.colorSecondary)
         setContentView(R.layout.activity_home)
 
+        val auth = FirebaseAuth.getInstance()
+        val db = FirebaseFirestore.getInstance()
+        val uid = auth.currentUser?.uid
+        val entriesRef = db.collection("users").document(uid!!).collection("entries")
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync { googleMap ->
+            this.googleMap = googleMap
             try {
                 // Check if the current theme is dark
                 val isDarkTheme = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
@@ -61,11 +70,9 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
 
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
-
         if (savedInstanceState == null) {
             bottomNavigationView.selectedItemId = R.id.menu_home
         }
-
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.menu_home -> {
@@ -99,6 +106,36 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         } else {
             startLocationUpdates(mapFragment)
         }
+
+        entriesRef.addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                Log.w(TAG, "Listen failed.", e)
+                return@addSnapshotListener
+            }
+
+            if (snapshot != null && googleMap != null) {
+                // Clear existing markers
+                googleMap!!.clear()
+
+                // Iterate over the documents in the snapshot
+                for (document in snapshot.documents) {
+                    // Get the location and title of the entry
+                    val location = document.getGeoPoint("location")
+                    val title = document.getString("title")
+
+                    // Log the location and title
+                    Log.d(TAG, "Location: $location, Title: $title")
+
+                    // Create a LatLng object from the location
+                    val latLng = LatLng(location!!.latitude, location.longitude)
+
+                    // Add a marker to the map at the LatLng position with the title
+                    googleMap!!.addMarker(MarkerOptions().position(latLng).title(title))
+                }
+            } else {
+                Log.d(TAG, "Current data: null")
+            }
+        }
     }
 
     private fun startLocationUpdates(mapFragment: SupportMapFragment) {
@@ -111,7 +148,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
             if (location != null) {
                 mapFragment.getMapAsync { googleMap ->
                     val currentLatLng = LatLng(location.latitude, location.longitude)
-                    googleMap.clear() // Clear old markers
+//                    googleMap.clear() // Clear old markers
                     googleMap.addMarker(MarkerOptions().position(currentLatLng).title("Current Location")) // Add a marker for current location
                     googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f)) // Move and zoom the camera to current location
 
@@ -141,10 +178,6 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-        googleMap.addMarker(
-            MarkerOptions()
-                .position(LatLng(-34.0, 151.0))
-                .title("Sydney")
-        )
+        this.googleMap = googleMap
     }
 }

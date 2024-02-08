@@ -82,11 +82,12 @@ class ProfileActivity : AppCompatActivity() {
                     true
                 }
                 R.id.menu_add -> {
-                    // Respond to navigation item 3 click
+                    val intent = Intent(this, AddEntryActivity::class.java)
+                    startActivity(intent)
+                    finish()
                     true
                 }
                 R.id.menu_profile -> {
-                    // Respond to navigation item 4 click
                     true
                 }
                 else -> false
