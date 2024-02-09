@@ -122,21 +122,21 @@
                 android:textColorHint="@color/inputBoxBorderColor"
                 android:textSize="15sp" />
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/bSendOTP"
-                style="@style/Widget.AppCompat.Button.Borderless"
+            <TextView
+                android:id="@+id/tvOTP"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:layout_marginVertical="5dp"
-                android:layout_marginEnd="5dp"
-                android:background="@drawable/rounded_otp_button"
-                android:fontFamily="@font/tripsans_medium"
                 android:gravity="center"
+                android:paddingHorizontal="10dp"
+                android:layout_marginVertical="10dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/rounded_otp_button"
+                android:fontFamily="@font/tripsans_bold"
                 android:letterSpacing="0"
                 android:text="Send OTP"
                 android:textAllCaps="false"
-                android:textColor="@color/textColor" />
+                android:textColor="@color/colorPrimary" />
         </LinearLayout>
 
         <TextView

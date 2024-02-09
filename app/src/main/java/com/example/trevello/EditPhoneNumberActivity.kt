@@ -20,6 +20,7 @@ import android.widget.ImageButton
 import com.bumptech.glide.request.target.Target
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
@@ -53,7 +54,7 @@ class EditPhoneNumberActivity: AppCompatActivity() {
     private lateinit var ivLock4: ImageView
     private lateinit var ivLock5: ImageView
     private lateinit var ivLock6: ImageView
-    private lateinit var sendOtpButton: Button
+    private lateinit var tvOTP: TextView
     private lateinit var llBack: LinearLayout
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
@@ -88,7 +89,7 @@ class EditPhoneNumberActivity: AppCompatActivity() {
         ivLock4 = findViewById(R.id.ivLock4)
         ivLock5 = findViewById(R.id.ivLock5)
         ivLock6 = findViewById(R.id.ivLock6)
-        sendOtpButton = findViewById(R.id.bSendOTP)
+        tvOTP = findViewById(R.id.tvOTP)
         llBack = findViewById(R.id.llBack)
         avatar = intent.getStringExtra("avatar")
         val phoneNoWithCountruCode = intent.getStringExtra("phone_no")
@@ -124,8 +125,6 @@ class EditPhoneNumberActivity: AppCompatActivity() {
             }
         })
 
-        sendOtpButton.background = ContextCompat.getDrawable(this, R.drawable.input_box)
-
         val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
@@ -145,7 +144,7 @@ class EditPhoneNumberActivity: AppCompatActivity() {
             }
         }
 
-        sendOtpButton.setOnClickListener {
+        tvOTP.setOnClickListener {
             if (isPhoneNumberValid) {
                 val userPhoneNumber = etPhoneNumber.text.toString().trimStart('0')
                 val phoneNumber = "+94$userPhoneNumber"
@@ -231,76 +230,80 @@ class EditPhoneNumberActivity: AppCompatActivity() {
     }
 
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
-        val user = FirebaseAuth.getInstance().currentUser
-        if (user != null) {
-            user.updatePhoneNumber(credential)
-                .addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        showSnackbar("Processing...")
-                        Log.d(ContentValues.TAG, "User phone number updated in Firebase Auth")
-                        // Update the phone number in the Firestore database
-                        val newPhoneNumber = "+94${etPhoneNumber.text.toString().trimStart('0')}"
-                        val userUpdates = hashMapOf<String, Any>("phone_number" to newPhoneNumber)
-                        db.collection("users").document(user.uid)
-                            .update(userUpdates)
-                            .addOnSuccessListener {
-                                // Delete the old phone number from the registered_phone_numbers collection
-                                if (phone_no != null) {
-                                    val oldPhoneNumber = "+94$phone_no"
-                                    db.collection("registered_phone_numbers").document(oldPhoneNumber)
-                                        .delete()
-                                        .addOnSuccessListener {
-                                            Log.d(ContentValues.TAG, "Old phone number deleted from registered_phone_numbers collection")
+        try {
+            val user = FirebaseAuth.getInstance().currentUser
+            if (user != null) {
+                user.updatePhoneNumber(credential)
+                    .addOnCompleteListener(this) { task ->
+                        if (task.isSuccessful) {
+                            showSnackbar("Processing...")
+                            Log.d(ContentValues.TAG, "User phone number updated in Firebase Auth")
+                            // Update the phone number in the Firestore database
+                            val newPhoneNumber = "+94${etPhoneNumber.text.toString().trimStart('0')}"
+                            val userUpdates = hashMapOf<String, Any>("phone_number" to newPhoneNumber)
+                            db.collection("users").document(user.uid)
+                                .update(userUpdates)
+                                .addOnSuccessListener {
+                                    // Delete the old phone number from the registered_phone_numbers collection
+                                    if (phone_no != null) {
+                                        val oldPhoneNumber = "+94$phone_no"
+                                        db.collection("registered_phone_numbers").document(oldPhoneNumber)
+                                            .delete()
+                                            .addOnSuccessListener {
+                                                Log.d(ContentValues.TAG, "Old phone number deleted from registered_phone_numbers collection")
 
-                                            // Add the new phone number to the registered_phone_numbers collection
-                                            db.collection("registered_phone_numbers")
-                                                .document(newPhoneNumber)
-                                                .set(hashMapOf("phone_number" to newPhoneNumber))
-                                                .addOnSuccessListener {
-                                                    Log.d(ContentValues.TAG, "New phone number added to registered_phone_numbers collection")
-                                                    showSnackbar("Phone number updated successfully.")
-                                                    auth.signOut()
-                                                    val intent = Intent(this, LoginActivity::class.java).apply {
-                                                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                                // Add the new phone number to the registered_phone_numbers collection
+                                                db.collection("registered_phone_numbers")
+                                                    .document(newPhoneNumber)
+                                                    .set(hashMapOf("phone_number" to newPhoneNumber))
+                                                    .addOnSuccessListener {
+                                                        Log.d(ContentValues.TAG, "New phone number added to registered_phone_numbers collection")
+                                                        showSnackbar("Phone number updated successfully.")
+                                                        auth.signOut()
+                                                        val intent = Intent(this, LoginActivity::class.java).apply {
+                                                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                                        }
+                                                        val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_left, R.anim.slide_out_right).toBundle()
+                                                        startActivity(intent, options)
                                                     }
-                                                    val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_left, R.anim.slide_out_right).toBundle()
-                                                    startActivity(intent, options)
-                                                }
-                                                .addOnFailureListener { e ->
-                                                    Log.w(ContentValues.TAG, "Error adding new phone number to collection", e)
-                                                    showSnackbar("Error updating phone number. Please try again.")
-                                                }
-                                        }
-                                        .addOnFailureListener { e ->
-                                            Log.w(ContentValues.TAG, "Error deleting old phone number from collection", e)
-                                            showSnackbar("Error updating phone number. Please try again.")
-                                        }
+                                                    .addOnFailureListener { e ->
+                                                        Log.w(ContentValues.TAG, "Error adding new phone number to collection", e)
+                                                        showSnackbar("Error updating phone number. Please try again.")
+                                                    }
+                                            }
+                                            .addOnFailureListener { e ->
+                                                Log.w(ContentValues.TAG, "Error deleting old phone number from collection", e)
+                                                showSnackbar("Error updating phone number. Please try again.")
+                                            }
+                                    }
                                 }
-                            }
-                            .addOnFailureListener { e ->
-                                Log.w(ContentValues.TAG, "Error updating phone number in Firestore", e)
-                                showSnackbar("Error updating phone number. Please try again.")
-                            }
-                    } else {
-                        showSnackbar("Phone number update failed. Please try again.")
-                        etOTP1.setText("")
-                        etOTP2.setText("")
-                        etOTP3.setText("")
-                        etOTP4.setText("")
-                        etOTP5.setText("")
-                        etOTP6.setText("")
-                        etOTP1.requestFocus()
+                                .addOnFailureListener { e ->
+                                    Log.w(ContentValues.TAG, "Error updating phone number in Firestore", e)
+                                    showSnackbar("Error updating phone number. Please try again.")
+                                }
+                        } else {
+                            showSnackbar("Phone number update failed. Please try again.")
+                            etOTP1.setText("")
+                            etOTP2.setText("")
+                            etOTP3.setText("")
+                            etOTP4.setText("")
+                            etOTP5.setText("")
+                            etOTP6.setText("")
+                            etOTP1.requestFocus()
+                        }
                     }
-                }
-        } else {
-            showSnackbar("OTP verification failed. Please try again.")
-            etOTP1.setText("")
-            etOTP2.setText("")
-            etOTP3.setText("")
-            etOTP4.setText("")
-            etOTP5.setText("")
-            etOTP6.setText("")
-            etOTP1.requestFocus()
+            } else {
+                showSnackbar("OTP verification failed. Please try again.")
+                etOTP1.setText("")
+                etOTP2.setText("")
+                etOTP3.setText("")
+                etOTP4.setText("")
+                etOTP5.setText("")
+                etOTP6.setText("")
+                etOTP1.requestFocus()
+            }
+        } catch (e:Exception) {
+            Log.e(ContentValues.TAG, "Error in signInWithPhoneAuthCredential", e)
         }
     }
 
@@ -334,7 +337,7 @@ class EditPhoneNumberActivity: AppCompatActivity() {
             etOTP4.isEnabled = false
             etOTP5.isEnabled = false
             etOTP6.isEnabled = false
-            sendOtpButton.isEnabled = true
+            tvOTP.isEnabled = true
         }
 
         private fun showSnackbar(message: String) {
@@ -355,7 +358,7 @@ class EditPhoneNumberActivity: AppCompatActivity() {
             etOTP4.isEnabled = true
             etOTP5.isEnabled = true
             etOTP6.isEnabled = true
-            sendOtpButton.isEnabled = false
+            tvOTP.isEnabled = false
             ivLock1.visibility = ImageButton.GONE
             ivLock2.visibility = ImageButton.GONE
             ivLock3.visibility = ImageButton.GONE

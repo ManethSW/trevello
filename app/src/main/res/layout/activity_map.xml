@@ -9,38 +9,43 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <fragment
-        android:id="@+id/autocomplete_fragment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:layout_marginHorizontal="30dp"
-        android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="30dp"
-        android:background="@drawable/input_box"
+        android:background="@color/colorSecondary"
         android:gravity="center_vertical"
+        android:padding="5dp"
         android:orientation="horizontal">
 
-        <EditText
-            android:id="@+id/etSearch"
+        <TextView
+            android:id="@+id/tvHint"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical"
-            android:alpha="0.5"
-            android:background="@null"
-            android:fontFamily="@font/tripsans_bold"
+            android:alpha="1"
+            android:fontFamily="@font/tripsans_regular"
             android:gravity="center"
-            android:hint="Search for a place"
-            android:paddingVertical="15dp"
+            android:hint="Click on the map to choose location"
+            android:paddingVertical="10dp"
             android:textColor="@color/textColor"
             android:textColorHint="@color/textColor"
-            android:textSize="14sp" />
+            android:textSize="16sp" />
     </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/ibBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:adjustViewBounds="true"
+        android:background="@drawable/rounded_button"
+        android:layout_marginBottom="30dp"
+        android:layout_marginStart="30dp"
+        android:paddingVertical="25dp"
+        android:paddingHorizontal="30dp"
+        android:src="@drawable/ic_back"
+        android:contentDescription="Back" />
+
+
 </RelativeLayout>

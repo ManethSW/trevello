@@ -1,18 +1,31 @@
 package com.example.trevello
 
+import android.Manifest
 import android.app.Activity
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.libraries.places.api.Places
@@ -23,6 +36,8 @@ import com.google.android.libraries.places.widget.listener.PlaceSelectionListene
 // In your new MapActivity
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
+    private lateinit var ibBack: ImageButton
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         window.navigationBarColor = ContextCompat.getColor(this, R.color.colorPrimary)
@@ -52,33 +67,43 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 Log.e(ContentValues.TAG, "Can't find style. Error: ", e)
             }
         }
+
         mapFragment.getMapAsync(this)
 
-        // Initialize the SDK
-//        Places.initialize(applicationContext, getString(R.string.my_api_key))
+        ibBack = findViewById(R.id.ibBack)
+        ibBack.setOnClickListener {
+            finish()
+        }
 
-        // Create a new Places client instance
-//        val placesClient = Places.createClient(this)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+    }
 
-        val autocompleteFragment = supportFragmentManager
-            .findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment
-        autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG))
+    private fun showCurrentLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) {
+            return
+        }
 
-        autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
-            override fun onPlaceSelected(place: Place) {
-                val returnIntent = Intent()
-                val location = Location("")
-                location.latitude = place.latLng?.latitude ?: 0.0
-                location.longitude = place.latLng?.longitude ?: 0.0
-                returnIntent.putExtra("location", location)
-                setResult(Activity.RESULT_OK, returnIntent)
-                finish()
+        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+            if (location != null) {
+                val currentLatLng = LatLng(location.latitude, location.longitude)
+                mMap.addMarker(MarkerOptions()
+                    .position(currentLatLng)
+                    .title("Current Location"))
+                    ?.setIcon(BitmapFromVector(this, R.drawable.ic_current_marker)!!)
+
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f)) // Move and zoom the camera to current location
             }
+        }
+    }
 
-            override fun onError(status: com.google.android.gms.common.api.Status) {
-                // Handle the error
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 1) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                showCurrentLocation()
             }
-        })
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -95,5 +120,26 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             setResult(Activity.RESULT_OK, returnIntent)
             finish()
         }
+
+        showCurrentLocation()
+    }
+
+    private fun BitmapFromVector(context: Context, vectorResId: Int): BitmapDescriptor? {
+        // below line is use to generate a drawable.
+        val vectorDrawable = ContextCompat.getDrawable(
+            context, vectorResId
+        )
+        vectorDrawable!!.setBounds(
+            0, 0, vectorDrawable.intrinsicWidth,
+            vectorDrawable.intrinsicHeight
+        )
+        val bitmap = Bitmap.createBitmap(
+            vectorDrawable.intrinsicWidth,
+            vectorDrawable.intrinsicHeight,
+            Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(bitmap)
+        vectorDrawable.draw(canvas)
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 }

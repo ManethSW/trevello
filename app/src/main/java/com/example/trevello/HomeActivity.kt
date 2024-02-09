@@ -37,6 +37,7 @@ import java.util.Locale
 class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var googleMap: GoogleMap? = null
+    private lateinit var locationCallback: LocationCallback
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +57,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync { googleMap ->
             this.googleMap = googleMap
+            googleMap.setMapStyle(null)
             try {
                 // Check if the current theme is dark
                 val isDarkTheme = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
@@ -177,6 +179,31 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
             return
         }
 
+        val locationRequest = LocationRequest.create().apply {
+            interval = 10000 // Set the desired interval for active location updates, in milliseconds.
+            fastestInterval = 5000 // Set the fastest rate for active location updates, in milliseconds.
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY // Set the priority of the request.
+        }
+
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                locationResult ?: return
+                for (location in locationResult.locations) {
+                    // Update the TextView with the current location
+                    val tvCurrentLocation = findViewById<TextView>(R.id.tvCurrentLocation)
+
+                    // Use Geocoder to get the location name
+                    val geocoder = Geocoder(this@HomeActivity, Locale.getDefault())
+                    val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+                    val cityName = addresses?.get(0)?.locality
+                    val streetName = addresses?.get(0)?.thoroughfare
+                    tvCurrentLocation.text = "$streetName, $cityName"
+                }
+            }
+        }
+
+        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
+
         fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
             if (location != null) {
                 mapFragment.getMapAsync { googleMap ->
@@ -234,5 +261,9 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
+    }
+
+    companion object {
+        private const val TAG = "HomeActivity"
     }
 }
