@@ -50,7 +50,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var ivLock5: ImageView
     private lateinit var ivLock6: ImageView
     private lateinit var sendOtpButton: Button
-    private lateinit var bBack: ImageButton
+    private lateinit var llBack: LinearLayout
     private lateinit var auth: FirebaseAuth
     private lateinit var handler: Handler
     private lateinit var runnable: Runnable
@@ -102,8 +102,6 @@ class LoginActivity : AppCompatActivity() {
         ivLock5 = findViewById(R.id.ivLock5)
         ivLock6 = findViewById(R.id.ivLock6)
         sendOtpButton = findViewById(R.id.bSendOTP)
-
-        sendOtpButton.background = ContextCompat.getDrawable(this, R.drawable.input_box)
 
         val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
@@ -190,10 +188,14 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-        bBack = findViewById(R.id.bBack)
-        bBack.setOnClickListener {
-            super.onBackPressed()
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+        llBack = findViewById(R.id.llBack)
+        llBack.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_left, R.anim.slide_out_right).toBundle()
+            startActivity(intent, options)
+            Handler(Looper.getMainLooper()).postDelayed({
+                finish()
+            }, 500) // Delay finish() to allow the animation to complete. Adjust the delay time as needed.
         }
     }
 
@@ -201,13 +203,28 @@ class LoginActivity : AppCompatActivity() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    handler.removeCallbacks(runnable) // remove the scheduled task if OTP verification is successful
-                    Log.d(ContentValues.TAG, "signInWithCredential:success")
-                    showSnackbar("OTP verification successful. Redirecting...")
-                    val intent = Intent(this, HomeActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left).toBundle()
-                    startActivity(intent, options)
+                    val user = task.result?.user
+                    val db = FirebaseFirestore.getInstance()
+                    val docRef = db.collection("users").document(user!!.uid)
+                    docRef.get()
+                        .addOnSuccessListener { document ->
+                            if (document != null && document.exists()) {
+                                handler.removeCallbacks(runnable) // remove the scheduled task if OTP verification is successful
+                                Log.d(ContentValues.TAG, "signInWithCredential:success")
+                                showSnackbar("OTP verification successful. Redirecting...")
+                                val intent = Intent(this, HomeActivity::class.java)
+                                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left).toBundle()
+                                startActivity(intent, options)
+                            } else {
+                                auth.currentUser?.delete()
+                                showSnackbar("User does not exist. Please register first.")
+                            }
+                        }
+                        .addOnFailureListener { exception ->
+                            Log.d(ContentValues.TAG, "get failed with ", exception)
+                            showSnackbar("Failed to check user existence. Please try again.")
+                        }
                 } else {
                     Log.w(ContentValues.TAG, "signInWithCredential:failure", task.exception)
                     if (task.exception is FirebaseAuthInvalidCredentialsException) {

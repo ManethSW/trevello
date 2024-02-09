@@ -1,7 +1,9 @@
 package com.example.trevello
 
+import android.app.ActivityOptions
 import android.content.ContentValues.TAG
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -50,7 +52,7 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var ivLock5: ImageView
     private lateinit var ivLock6: ImageView
     private lateinit var sendOtpButton: Button
-    private lateinit var bBack: ImageButton
+    private lateinit var llBack: LinearLayout
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private lateinit var handler: Handler
@@ -261,10 +263,14 @@ class RegisterActivity : AppCompatActivity() {
             }
         }
 
-        bBack = findViewById(R.id.bBack)
-        bBack.setOnClickListener {
-            super.onBackPressed()
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+        llBack = findViewById(R.id.llBack)
+        llBack.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_left, R.anim.slide_out_right).toBundle()
+            startActivity(intent, options)
+            Handler(Looper.getMainLooper()).postDelayed({
+                finish()
+            }, 500) // Delay finish() to allow the animation to complete. Adjust the delay time as needed.
         }
     }
 

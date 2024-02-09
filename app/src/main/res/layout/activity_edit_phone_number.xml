@@ -157,7 +157,7 @@
         android:id="@+id/tvSubHeading2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32.5dp"
+        android:layout_marginTop="25dp"
         android:layout_marginBottom="25dp"
         android:alpha="0.5"
         android:fontFamily="@font/tripsans_regular"
@@ -379,27 +379,6 @@
                 android:src="@drawable/ic_lock" />
         </FrameLayout>
     </LinearLayout>
-
-    <!--    <androidx.appcompat.widget.AppCompatButton-->
-    <!--        android:id="@+id/bSendOTP"-->
-    <!--        style="@style/Widget.AppCompat.Button.Borderless"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_marginStart="30dp"-->
-    <!--        android:layout_marginTop="32.5dp"-->
-    <!--        android:layout_marginEnd="30dp"-->
-    <!--        android:background="@drawable/input_box"-->
-    <!--        android:fontFamily="@font/tripsans_bold"-->
-    <!--        android:paddingTop="15dp"-->
-    <!--        android:paddingBottom="15dp"-->
-    <!--        android:text="Send OTP"-->
-    <!--        android:textAllCaps="false"-->
-    <!--        android:textColor="@color/textColor"-->
-    <!--        android:textSize="15sp"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toBottomOf="@+id/flOTP" />-->
-
 
     <LinearLayout
         android:id="@+id/llBack"

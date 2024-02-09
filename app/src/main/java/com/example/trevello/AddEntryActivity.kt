@@ -16,10 +16,13 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -38,6 +41,7 @@ import java.util.Locale
 import java.util.UUID
 
 class AddEntryActivity : AppCompatActivity() {
+    private val CAMERA_REQUEST_CODE = 2000
     private lateinit var llCurrentLocation: LinearLayout
     private lateinit var llSetLocation: LinearLayout
     private lateinit var llTitleInput: LinearLayout
@@ -183,12 +187,39 @@ class AddEntryActivity : AppCompatActivity() {
         })
 
         llUploadImages.setOnClickListener {
-            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                addCategory(Intent.CATEGORY_OPENABLE)
-                type = "image/*"
-                putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+            // Inflate the custom layout
+            val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_layout, null)
+
+            // Create an AlertDialog.Builder and set the view
+            val builder = AlertDialog.Builder(this, R.style.CustomAlertDialog)
+            builder.setView(dialogView)
+
+            // Create the AlertDialog
+            val alertDialog = builder.create()
+
+            // Get the custom AlertDialog buttons and set their onClickListeners
+            val btnTakePhoto = dialogView.findViewById<Button>(R.id.btnTakePhoto)
+            val btnChooseFromGallery = dialogView.findViewById<Button>(R.id.btnChooseFromGallery)
+
+            btnTakePhoto.setOnClickListener {
+                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                startActivityForResult(intent, CAMERA_REQUEST_CODE)
+                alertDialog.dismiss() // Close the dialog
             }
-            startActivityForResult(intent, REQUEST_IMAGE_PICK)
+
+            btnChooseFromGallery.setOnClickListener {
+                // Handle "Select Files" option
+                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "image/*"
+                    putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+                }
+                startActivityForResult(intent, REQUEST_IMAGE_PICK)
+                alertDialog.dismiss() // Close the dialog
+            }
+
+            // Show the AlertDialog
+            alertDialog.show()
         }
 
         llAdd.setOnClickListener {

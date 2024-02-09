@@ -4,6 +4,8 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -51,17 +53,21 @@ class MainActivity : AppCompatActivity() {
         val loginButton = findViewById<Button>(R.id.bLogin)
 
         createAccountButton.setOnClickListener {
-            // Start the create account activity or implement create account logic here
             val intent = Intent(this, RegisterActivity::class.java)
             val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left).toBundle()
             startActivity(intent, options)
+            Handler(Looper.getMainLooper()).postDelayed({
+                finish()
+            }, 500) // Delay finish() to allow the animation to complete. Adjust the delay time as needed.
         }
 
         loginButton.setOnClickListener {
-            // Start the login activity or implement login logic here
             val intent = Intent(this, LoginActivity::class.java)
             val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_right, R.anim.slide_out_left).toBundle()
             startActivity(intent, options)
+            Handler(Looper.getMainLooper()).postDelayed({
+                finish()
+            }, 500) // Delay finish() to allow the animation to complete. Adjust the delay time as needed.
         }
     }
     private fun updateUI(currentUser: FirebaseUser?) {
