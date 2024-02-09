@@ -5,6 +5,8 @@ import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -45,9 +47,18 @@ class EditPhoneNumberActivity: AppCompatActivity() {
     private lateinit var etOTP4: EditText
     private lateinit var etOTP5: EditText
     private lateinit var etOTP6: EditText
+    private lateinit var ivLock1: ImageView
+    private lateinit var ivLock2: ImageView
+    private lateinit var ivLock3: ImageView
+    private lateinit var ivLock4: ImageView
+    private lateinit var ivLock5: ImageView
+    private lateinit var ivLock6: ImageView
     private lateinit var sendOtpButton: Button
     private lateinit var ibBack: ImageButton
     private lateinit var auth: FirebaseAuth
+    private lateinit var db: FirebaseFirestore
+    private lateinit var handler: Handler
+    private lateinit var runnable: Runnable
     private var storedVerificationId: String? = null
     private var avatar: String? = null
     private var phone_no: String? = null
@@ -59,6 +70,7 @@ class EditPhoneNumberActivity: AppCompatActivity() {
         setContentView(R.layout.activity_edit_phone_number)
 
         auth = Firebase.auth
+        db = FirebaseFirestore.getInstance()
         var isPhoneNumberValid = false
         imageView = findViewById(R.id.ivProfile)
         layoutParams = imageView.layoutParams as LinearLayout.LayoutParams
@@ -70,6 +82,12 @@ class EditPhoneNumberActivity: AppCompatActivity() {
         etOTP4 = findViewById(R.id.etOTP4)
         etOTP5 = findViewById(R.id.etOTP5)
         etOTP6 = findViewById(R.id.etOTP6)
+        ivLock1 = findViewById(R.id.ivLock1)
+        ivLock2 = findViewById(R.id.ivLock2)
+        ivLock3 = findViewById(R.id.ivLock3)
+        ivLock4 = findViewById(R.id.ivLock4)
+        ivLock5 = findViewById(R.id.ivLock5)
+        ivLock6 = findViewById(R.id.ivLock6)
         sendOtpButton = findViewById(R.id.bSendOTP)
         ibBack = findViewById(R.id.ibBack)
         avatar = intent.getStringExtra("avatar")
@@ -93,7 +111,10 @@ class EditPhoneNumberActivity: AppCompatActivity() {
             }
 
             override fun afterTextChanged(s: Editable) {
-                if (s.length == 9 || s.length == 10) {
+                if(s.toString() == phone_no) {
+                    isPhoneNumberValid = false
+                    llPhoneNumber.background = ContextCompat.getDrawable(applicationContext, R.drawable.input_box)
+                } else if (s.length == 10) {
                     llPhoneNumber.setBackgroundResource(R.drawable.input_box_valid)
                     isPhoneNumberValid = true
                 } else {
@@ -112,7 +133,7 @@ class EditPhoneNumberActivity: AppCompatActivity() {
             }
 
             override fun onVerificationFailed(e: FirebaseException) {
-                showErrorSnackbar("Verification failed: ${e.message}")
+                showSnackbar("Verification failed: ${e.message}")
             }
 
             override fun onCodeSent(
@@ -128,16 +149,39 @@ class EditPhoneNumberActivity: AppCompatActivity() {
             if (isPhoneNumberValid) {
                 val userPhoneNumber = etPhoneNumber.text.toString().trimStart('0')
                 val phoneNumber = "+94$userPhoneNumber"
-                val options = PhoneAuthOptions.newBuilder(auth)
-                    .setPhoneNumber(phoneNumber)
-                    .setTimeout(60L, TimeUnit.SECONDS)
-                    .setActivity(this)
-                    .setCallbacks(callbacks)
-                    .build()
-                PhoneAuthProvider.verifyPhoneNumber(options)
-                enableOTPInputs()
+                db.collection("registered_phone_numbers")
+                    .document(phoneNumber)
+                    .get()
+                    .addOnSuccessListener { document ->
+                        if (document.exists()) {
+                            showSnackbar("Phone number already in use.")
+                        } else {
+                            val options = PhoneAuthOptions.newBuilder(auth)
+                                .setPhoneNumber(phoneNumber)       // Phone number to verify
+                                .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
+                                .setActivity(this)                 // Activity (for callback binding)
+                                .setCallbacks(callbacks)           // OnVerificationStateChangedCallbacks
+                                .build()
+                            PhoneAuthProvider.verifyPhoneNumber(options)
+                            enableOTPInputs()
+                            handler = Handler(Looper.getMainLooper())
+                            runnable = Runnable {
+                                resetInputsAndButton()
+                                showSnackbar("OTP verification timed out. Please try again.")
+                            }
+                            handler.postDelayed(runnable, 60000)
+                            showSnackbar("OTP sent to number $phoneNumber")
+                        }
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.w(
+                            ContentValues.TAG,
+                            "Error checking phone number in collection",
+                            exception
+                        )
+                    }
             } else {
-                showErrorSnackbar("Please enter valid details")
+                showSnackbar("Please enter valid details")
             }
         }
 
@@ -198,11 +242,36 @@ class EditPhoneNumberActivity: AppCompatActivity() {
 
                         // Update the phone number in the Firestore database
                         val db = FirebaseFirestore.getInstance()
-                        val userUpdates = hashMapOf<String, Any>("phone_number" to "+94${etPhoneNumber.text.toString().trimStart('0')}")
+                        val newPhoneNumber = "+94${etPhoneNumber.text.toString().trimStart('0')}"
+                        val userUpdates = hashMapOf<String, Any>("phone_number" to newPhoneNumber)
                         db.collection("users").document(user.uid)
                             .update(userUpdates)
                             .addOnSuccessListener {
-                                Log.d(ContentValues.TAG, "User phone number updated in Firestore")
+                                // Delete the old phone number from the registered_phone_numbers collection
+                                if (phone_no != null) {
+                                    val oldPhoneNumber = "+94$phone_no"
+                                    db.collection("registered_phone_numbers").document(oldPhoneNumber)
+                                        .delete()
+                                        .addOnSuccessListener {
+                                            Log.d(ContentValues.TAG, "Old phone number deleted from registered_phone_numbers collection")
+                                        }
+                                        .addOnFailureListener { e ->
+                                            Log.w(ContentValues.TAG, "Error deleting old phone number from collection", e)
+                                        }
+                                }
+
+                                // Add the new phone number to the registered_phone_numbers collection
+                                db.collection("registered_phone_numbers")
+                                    .document(newPhoneNumber)
+                                    .set(hashMapOf("phone_number" to newPhoneNumber))
+                                    .addOnSuccessListener {
+                                        Log.d(ContentValues.TAG, "New phone number added to registered_phone_numbers collection")
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.w(ContentValues.TAG, "Error adding new phone number to collection", e)
+                                    }
+
+                                showSnackbar("Phone number updated successfully")
 
                                 // Sign out the user
                                 FirebaseAuth.getInstance().signOut()
@@ -212,41 +281,33 @@ class EditPhoneNumberActivity: AppCompatActivity() {
                                 val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_left, R.anim.slide_out_right).toBundle()
                                 startActivity(intent, options)
                                 finish()
+                                showSnackbar("Redirecting...")
                             }
                             .addOnFailureListener { e ->
                                 Log.w(ContentValues.TAG, "Error updating phone number in Firestore", e)
+                                showSnackbar("Error updating phone number. Please try again.")
                             }
                     } else {
-                        Log.w(ContentValues.TAG, "Error updating phone number in Firebase Auth", task.exception)
+                        showSnackbar("Phone number update failed. Please try again.")
+                        etOTP1.setText("")
+                        etOTP2.setText("")
+                        etOTP3.setText("")
+                        etOTP4.setText("")
+                        etOTP5.setText("")
+                        etOTP6.setText("")
+                        etOTP1.requestFocus()
                     }
                 }
         } else {
-            Log.w(ContentValues.TAG, "No user is signed in to update phone number")
+            showSnackbar("OTP verification failed. Please try again.")
+            etOTP1.setText("")
+            etOTP2.setText("")
+            etOTP3.setText("")
+            etOTP4.setText("")
+            etOTP5.setText("")
+            etOTP6.setText("")
+            etOTP1.requestFocus()
         }
-
-        etOTP1.setText("")
-        etOTP2.setText("")
-        etOTP3.setText("")
-        etOTP4.setText("")
-        etOTP5.setText("")
-        etOTP6.setText("")
-        etOTP1.isEnabled = false
-        etOTP2.isEnabled = false
-        etOTP3.isEnabled = false
-        etOTP4.isEnabled = false
-        etOTP5.isEnabled = false
-        etOTP6.isEnabled = false
-        sendOtpButton.isEnabled = true
-    }
-
-    private fun showErrorSnackbar(message: String) {
-        val snackbar = Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG)
-        val params = snackbar.view.layoutParams as FrameLayout.LayoutParams
-
-        params.gravity = Gravity.TOP
-        snackbar.view.layoutParams = params
-        snackbar.show()
-        snackbar.view.postDelayed({ snackbar.dismiss() }, 4000)
     }
 
     override fun onBackPressed() {
@@ -254,16 +315,66 @@ class EditPhoneNumberActivity: AppCompatActivity() {
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
     }
 
-    private fun enableOTPInputs() {
-        etOTP1.isEnabled = true
-        etOTP2.isEnabled = true
-        etOTP3.isEnabled = true
-        etOTP4.isEnabled = true
-        etOTP5.isEnabled = true
-        etOTP6.isEnabled = true
+        private fun resetInputsAndButton() {
+            etOTP1.setText("")
+            etOTP2.setText("")
+            etOTP3.setText("")
+            etOTP4.setText("")
+            etOTP5.setText("")
+            etOTP6.setText("")
+            etOTP1.hint = ""
+            etOTP2.hint = ""
+            etOTP3.hint = ""
+            etOTP4.hint = ""
+            etOTP5.hint = ""
+            etOTP6.hint = ""
+            ivLock1.visibility = ImageButton.VISIBLE
+            ivLock2.visibility = ImageButton.VISIBLE
+            ivLock3.visibility = ImageButton.VISIBLE
+            ivLock4.visibility = ImageButton.VISIBLE
+            ivLock5.visibility = ImageButton.VISIBLE
+            ivLock6.visibility = ImageButton.VISIBLE
+            etOTP1.isEnabled = false
+            etOTP2.isEnabled = false
+            etOTP3.isEnabled = false
+            etOTP4.isEnabled = false
+            etOTP5.isEnabled = false
+            etOTP6.isEnabled = false
+            sendOtpButton.isEnabled = true
+        }
 
-        sendOtpButton.isEnabled = false
-    }
+        private fun showSnackbar(message: String) {
+            val snackbar =
+                Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG)
+            val params = snackbar.view.layoutParams as FrameLayout.LayoutParams
+
+            params.gravity = Gravity.TOP
+            snackbar.view.layoutParams = params
+            snackbar.show()
+            snackbar.view.postDelayed({ snackbar.dismiss() }, 4000)
+        }
+
+        private fun enableOTPInputs() {
+            etOTP1.isEnabled = true
+            etOTP2.isEnabled = true
+            etOTP3.isEnabled = true
+            etOTP4.isEnabled = true
+            etOTP5.isEnabled = true
+            etOTP6.isEnabled = true
+            sendOtpButton.isEnabled = false
+            ivLock1.visibility = ImageButton.GONE
+            ivLock2.visibility = ImageButton.GONE
+            ivLock3.visibility = ImageButton.GONE
+            ivLock4.visibility = ImageButton.GONE
+            ivLock5.visibility = ImageButton.GONE
+            ivLock6.visibility = ImageButton.GONE
+            etOTP1.hint = "•"
+            etOTP2.hint = "•"
+            etOTP3.hint = "•"
+            etOTP4.hint = "•"
+            etOTP5.hint = "•"
+            etOTP6.hint = "•"
+        }
 
     private fun onOtpCompleted() {
         val otp = etOTP1.text.toString() + etOTP2.text.toString() + etOTP3.text.toString() + etOTP4.text.toString() + etOTP5.text.toString() + etOTP6.text.toString()

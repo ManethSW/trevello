@@ -169,7 +169,7 @@ class RegisterActivity : AppCompatActivity() {
             override fun onVerificationFailed(e: FirebaseException) {
                 // This callback is invoked in an invalid request for verification is made,
                 // for instance if the the phone number format is not valid.
-                showErrorSnackbar("Verification failed: ${e.message}")
+                showSnackbar("Verification failed: ${e.message}")
             }
 
             override fun onCodeSent(
@@ -190,7 +190,7 @@ class RegisterActivity : AppCompatActivity() {
                     .get()
                     .addOnSuccessListener { document ->
                         if (document.exists()) {
-                            showErrorSnackbar("Phone number already in use.")
+                            showSnackbar("Phone number already in use.")
                         } else {
                             val options = PhoneAuthOptions.newBuilder(auth)
                                 .setPhoneNumber(phoneNumber)       // Phone number to verify
@@ -206,13 +206,14 @@ class RegisterActivity : AppCompatActivity() {
                                 showSnackbar("OTP verification timed out. Please try again.")
                             }
                             handler.postDelayed(runnable, 60000)
+                            showSnackbar("OTP sent to number $phoneNumber")
                         }
                     }
                     .addOnFailureListener { exception ->
                         Log.w(TAG, "Error checking phone number in collection", exception)
                     }
             } else {
-                showErrorSnackbar("Please enter valid details")
+                showSnackbar("Please enter valid details")
             }
         }
 
@@ -315,26 +316,37 @@ class RegisterActivity : AppCompatActivity() {
                                 Log.w(TAG, "Error adding document", e)
                             }
                     } else {
-                        // Sign in failed, display a message and update the UI
-                        Log.w(TAG, "signInWithCredential:failure", task.exception)
-                        if (task.exception is FirebaseAuthInvalidCredentialsException) {
-                            showSnackbar("OTP verification failed. Please try again.")
-                        }
-                        // Update UI
+                        showSnackbar("Phone number update failed. Please try again.")
+                        etOTP1.setText("")
+                        etOTP2.setText("")
+                        etOTP3.setText("")
+                        etOTP4.setText("")
+                        etOTP5.setText("")
+                        etOTP6.setText("")
+                        etOTP1.requestFocus()
+                    }
+                } else {
+                    if (task.exception is FirebaseAuthInvalidCredentialsException) {
+                        showSnackbar("OTP verification failed. Please try again.")
+                        etOTP1.setText("")
+                        etOTP2.setText("")
+                        etOTP3.setText("")
+                        etOTP4.setText("")
+                        etOTP5.setText("")
+                        etOTP6.setText("")
+                        etOTP1.requestFocus()
+                    } else {
+                        showSnackbar("An error occurred. Please try again.")
+                        etOTP1.setText("")
+                        etOTP2.setText("")
+                        etOTP3.setText("")
+                        etOTP4.setText("")
+                        etOTP5.setText("")
+                        etOTP6.setText("")
+                        etOTP1.requestFocus()
                     }
                 }
             }
-    }
-
-    private fun showErrorSnackbar(message: String) {
-        val snackbar =
-            Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG)
-        val params = snackbar.view.layoutParams as FrameLayout.LayoutParams
-
-        params.gravity = Gravity.TOP
-        snackbar.view.layoutParams = params
-        snackbar.show()
-        snackbar.view.postDelayed({ snackbar.dismiss() }, 4000)
     }
 
     override fun onBackPressed() {

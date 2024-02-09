@@ -144,7 +144,7 @@ class LoginActivity : AppCompatActivity() {
                     showSnackbar("OTP verification timed out. Please try again.")
                 }
                 handler.postDelayed(runnable, 60000)
-                showSnackbar("OTP sent successfully. Please check your phone.")
+                showSnackbar("OTP sent to number $phoneNumber")
             } else {
                 showSnackbar("Please enter valid details")
             }
@@ -212,6 +212,13 @@ class LoginActivity : AppCompatActivity() {
                     Log.w(ContentValues.TAG, "signInWithCredential:failure", task.exception)
                     if (task.exception is FirebaseAuthInvalidCredentialsException) {
                         showSnackbar("OTP verification failed. Please try again.")
+                        etOTP1.setText("")
+                        etOTP2.setText("")
+                        etOTP3.setText("")
+                        etOTP4.setText("")
+                        etOTP5.setText("")
+                        etOTP6.setText("")
+                        etOTP1.requestFocus()
                     }
                 }
             }

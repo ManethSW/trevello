@@ -129,7 +129,6 @@ class ProfileActivity : AppCompatActivity() {
             intent.putExtra("avatar", avatar)
             intent.putExtra("phone_no", phone_no)
             startActivity(intent)
-            finish()
         }
     }
 
