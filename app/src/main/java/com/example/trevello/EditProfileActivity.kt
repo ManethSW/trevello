@@ -217,12 +217,10 @@ class EditProfileActivity : AppCompatActivity() {
             // Handle image pick result
             newAvatarUri = data.data
             newAvatarUri?.let {
-                if(!isFinishing) {
-                    Glide.with(this)
-                        .load(it)
-                        .circleCrop()
-                        .into(imageView)
-                }
+                Glide.with(this)
+                    .load(it)
+                    .circleCrop()
+                    .into(imageView)
             }
         } else if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
             // Handle camera result
@@ -230,12 +228,10 @@ class EditProfileActivity : AppCompatActivity() {
             // Convert bitmap to Uri
             newAvatarUri = bitmapToUri(bitmap)
             newAvatarUri?.let {
-                if(!isFinishing) {
-                    Glide.with(this)
-                        .load(it)
-                        .circleCrop()
-                        .into(imageView)
-                }
+                Glide.with(this)
+                    .load(it)
+                    .circleCrop()
+                    .into(imageView)
             }
         }
     }
