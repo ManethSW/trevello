@@ -54,7 +54,7 @@ class EditPhoneNumberActivity: AppCompatActivity() {
     private lateinit var ivLock5: ImageView
     private lateinit var ivLock6: ImageView
     private lateinit var sendOtpButton: Button
-    private lateinit var ibBack: ImageButton
+    private lateinit var llBack: LinearLayout
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private lateinit var handler: Handler
@@ -89,7 +89,7 @@ class EditPhoneNumberActivity: AppCompatActivity() {
         ivLock5 = findViewById(R.id.ivLock5)
         ivLock6 = findViewById(R.id.ivLock6)
         sendOtpButton = findViewById(R.id.bSendOTP)
-        ibBack = findViewById(R.id.ibBack)
+        llBack = findViewById(R.id.llBack)
         avatar = intent.getStringExtra("avatar")
         val phoneNoWithCountruCode = intent.getStringExtra("phone_no")
         if (phoneNoWithCountruCode != null) {
@@ -225,7 +225,7 @@ class EditPhoneNumberActivity: AppCompatActivity() {
             }
         }
 
-        ibBack.setOnClickListener {
+        llBack.setOnClickListener {
             finish()
         }
     }

@@ -7,4 +7,6 @@
     <color name="inputBoxBorderColor">#858D91</color>
     <color name="currentLocationContainerColor">#BFFFFFFF</color>
     <color name="descriptionContainerColor">#800B171E</color>
+    <color name="currentMarkerBackgroundColor">#26FFFFFF</color>
+    <color name="currentMarkerStrokeColor">#80FFFFFF</color>
 </resources>

@@ -134,6 +134,19 @@
             android:textSize="17.5sp" />
     </FrameLayout>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="30dp"
+        android:layout_marginBottom="20dp"
+        android:text="Only data that you change will be saved"
+        android:textAlignment="center"
+        android:textColor="@color/textColor"
+        android:textSize="16sp"
+        android:alpha="0.5"
+        android:fontFamily="@font/tripsans_medium"
+        app:layout_constraintBottom_toTopOf="@+id/llLogout" />
+
     <LinearLayout
         android:id="@+id/llLogout"
         android:layout_width="match_parent"
@@ -167,22 +180,34 @@
             android:layout_height="wrap_content"
             android:gravity="start" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/bSave"
+        <LinearLayout
+            android:id="@+id/llSave"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:background="@drawable/rounded_corners"
-            android:drawableStart="@drawable/ic_uplaod"
-            android:drawablePadding="20dp"
-            android:fontFamily="@font/tripsans_medium"
-            android:paddingHorizontal="35dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="15dp"
-            android:text="Save"
-            android:textAllCaps="false"
-            android:textColor="@color/textColor"
-            android:textSize="18sp" />
+            android:paddingBottom="5dp"
+            android:paddingEnd="10dp"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_uplaod"
+                android:layout_gravity="center"
+                />
+
+            <TextView
+                android:id="@+id/tvSave"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/tripsans_medium"
+                android:paddingHorizontal="25dp"
+                android:text="Save"
+                android:textAllCaps="false"
+                android:textColor="@color/textColor"
+                android:textSize="18sp" />
+        </LinearLayout>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,13 +1,16 @@
 package com.example.trevello
 
-import android.location.Geocoder
-import java.util.Locale
+import MarkerInfoDialogFragment
 import android.Manifest
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -20,12 +23,16 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import java.util.Locale
+
 
 class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -126,7 +133,11 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                     val latLng = LatLng(location!!.latitude, location.longitude)
 
                     // Add a marker to the map at the LatLng position with the title
-                    val marker = googleMap!!.addMarker(MarkerOptions().position(latLng).title(title))
+                    val marker = googleMap!!.addMarker(MarkerOptions()
+                        .position(latLng)
+                        .title(title))
+                    marker?.setIcon(BitmapFromVector(this, R.drawable.ic_entry_marker)!!)
+
                     if (marker != null) {
                         marker.tag = document.id
                     }
@@ -137,16 +148,20 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                     if (tag == null) {
                         Log.w(TAG, "Marker tag is null")
                         return@setOnMarkerClickListener true
-                    }
-
-                    val documentId = tag as String
-                    entriesRef.document(documentId).get().addOnSuccessListener { document ->
-                        val title = document.getString("title")
-                        val location = document.getString("address") // Assuming the document has a "location" field
-                        val description = document.getString("description")
-                        val images = document.get("images") as ArrayList<String> // Use get method to retrieve the ArrayList
-                        val dialog = MarkerInfoDialogFragment.newInstance(title!!, location!!, description!!, images)
-                        dialog.show(supportFragmentManager, "MarkerInfoDialogFragment") // Make sure to pass the required parameters to the show method
+                        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(marker.position, 15f)
+                        googleMap!!.animateCamera(cameraUpdate)
+                    }else {
+                        val documentId = tag as String
+                        entriesRef.document(documentId).get().addOnSuccessListener { document ->
+                            val title = document.getString("title")
+                            val location = document.getString("address") // Assuming the document has a "location" field
+                            val description = document.getString("description")
+                            val images = document.get("images") as ArrayList<String> // Use get method to retrieve the ArrayList
+                            val dialog = MarkerInfoDialogFragment.newInstance(title!!, location!!, description!!, images)
+                            dialog.show(supportFragmentManager, "MarkerInfoDialogFragment") // Make sure to pass the required parameters to the show method
+                        }
+                        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(marker.position, 15f)
+                        googleMap!!.moveCamera(cameraUpdate)
                     }
                     true
                 }
@@ -166,8 +181,11 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
             if (location != null) {
                 mapFragment.getMapAsync { googleMap ->
                     val currentLatLng = LatLng(location.latitude, location.longitude)
-                    // googleMap.clear() // Clear old markers
-                    googleMap.addMarker(MarkerOptions().position(currentLatLng).title("Current Location")) // Add a marker for current location
+                    googleMap.addMarker(MarkerOptions()
+                        .position(currentLatLng)
+                        .title("Current Location"))
+                        ?.setIcon(BitmapFromVector(this, R.drawable.ic_current_marker)!!)
+
                     googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f)) // Move and zoom the camera to current location
 
                     // Update the TextView with the current location
@@ -182,6 +200,25 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             }
         }
+    }
+
+    private fun BitmapFromVector(context: Context, vectorResId: Int): BitmapDescriptor? {
+        // below line is use to generate a drawable.
+        val vectorDrawable = ContextCompat.getDrawable(
+            context, vectorResId
+        )
+        vectorDrawable!!.setBounds(
+            0, 0, vectorDrawable.intrinsicWidth,
+            vectorDrawable.intrinsicHeight
+        )
+        val bitmap = Bitmap.createBitmap(
+            vectorDrawable.intrinsicWidth,
+            vectorDrawable.intrinsicHeight,
+            Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(bitmap)
+        vectorDrawable.draw(canvas)
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {

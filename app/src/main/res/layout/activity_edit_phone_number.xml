@@ -11,11 +11,11 @@
         android:id="@+id/llAvatar"
         android:layout_width="100dp"
         android:layout_height="100dp"
+        android:layout_marginTop="50dp"
         android:background="@drawable/avatar_container"
         android:gravity="center"
         android:orientation="horizontal"
         android:padding="5dp"
-        android:layout_marginTop="50dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -121,6 +121,22 @@
                 android:textColor="@color/textColor"
                 android:textColorHint="@color/inputBoxBorderColor"
                 android:textSize="15sp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/bSendOTP"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginVertical="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/rounded_otp_button"
+                android:fontFamily="@font/tripsans_medium"
+                android:gravity="center"
+                android:letterSpacing="0"
+                android:text="Send OTP"
+                android:textAllCaps="false"
+                android:textColor="@color/textColor" />
         </LinearLayout>
 
         <TextView
@@ -128,11 +144,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:alpha="0.75"
+            android:alpha="1"
             android:background="@drawable/label_background"
             android:fontFamily="@font/tripsans_bold"
-            android:paddingStart="5dp"
-            android:paddingEnd="5dp"
+            android:paddingHorizontal="5dp"
             android:text="Phone Number"
             android:textColor="@color/textColor"
             android:textSize="17.5sp" />
@@ -189,13 +204,15 @@
                 android:id="@+id/ivLock1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:alpha="0.5"
                 android:layout_gravity="center"
+                android:alpha="0.5"
                 android:src="@drawable/ic_lock" />
         </FrameLayout>
+
         <View
             android:layout_width="10dp"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent" />
+
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="45dp"
@@ -221,13 +238,15 @@
                 android:id="@+id/ivLock2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:alpha="0.5"
                 android:layout_gravity="center"
+                android:alpha="0.5"
                 android:src="@drawable/ic_lock" />
         </FrameLayout>
+
         <View
             android:layout_width="10dp"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent" />
+
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="45dp"
@@ -253,13 +272,15 @@
                 android:id="@+id/ivLock3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:alpha="0.5"
                 android:layout_gravity="center"
+                android:alpha="0.5"
                 android:src="@drawable/ic_lock" />
         </FrameLayout>
+
         <View
             android:layout_width="10dp"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent" />
+
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="45dp"
@@ -285,13 +306,15 @@
                 android:id="@+id/ivLock4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:alpha="0.5"
                 android:layout_gravity="center"
+                android:alpha="0.5"
                 android:src="@drawable/ic_lock" />
         </FrameLayout>
+
         <View
             android:layout_width="10dp"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent" />
+
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="45dp"
@@ -317,13 +340,15 @@
                 android:id="@+id/ivLock5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:alpha="0.5"
                 android:layout_gravity="center"
+                android:alpha="0.5"
                 android:src="@drawable/ic_lock" />
         </FrameLayout>
+
         <View
             android:layout_width="10dp"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent" />
+
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="45dp"
@@ -349,62 +374,64 @@
                 android:id="@+id/ivLock6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:alpha="0.5"
                 android:layout_gravity="center"
+                android:alpha="0.5"
                 android:src="@drawable/ic_lock" />
         </FrameLayout>
     </LinearLayout>
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/bSendOTP"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="32.5dp"
-        android:layout_marginEnd="30dp"
-        android:background="@drawable/input_box"
-        android:fontFamily="@font/tripsans_bold"
-        android:paddingTop="15dp"
-        android:paddingBottom="15dp"
-        android:text="Send OTP"
-        android:textAllCaps="false"
-        android:textColor="@color/textColor"
-        android:textSize="15sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/flOTP" />
+    <!--    <androidx.appcompat.widget.AppCompatButton-->
+    <!--        android:id="@+id/bSendOTP"-->
+    <!--        style="@style/Widget.AppCompat.Button.Borderless"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginStart="30dp"-->
+    <!--        android:layout_marginTop="32.5dp"-->
+    <!--        android:layout_marginEnd="30dp"-->
+    <!--        android:background="@drawable/input_box"-->
+    <!--        android:fontFamily="@font/tripsans_bold"-->
+    <!--        android:paddingTop="15dp"-->
+    <!--        android:paddingBottom="15dp"-->
+    <!--        android:text="Send OTP"-->
+    <!--        android:textAllCaps="false"-->
+    <!--        android:textColor="@color/textColor"-->
+    <!--        android:textSize="15sp"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/flOTP" />-->
 
 
     <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="0dp"
+        android:id="@+id/llBack"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="30dp"
+        android:layout_marginHorizontal="20dp"
         android:gravity="center"
+        android:paddingTop="15dp"
+        android:paddingBottom="20dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/rounded_corners"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-    <ImageButton
-        android:id="@+id/ibBack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        android:background="@drawable/rounded_corners"
-        android:paddingStart="40dp"
-        android:paddingTop="20dp"
-        android:paddingEnd="45dp"
-        android:paddingBottom="25dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/ic_back"
-        app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="10dp"
+            android:src="@drawable/ic_back" />
+        <View
+            android:layout_width="20dp"
+            android:layout_height="match_parent"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/tripsans_medium"
+            android:text="Back"
+            android:textColor="@color/textColor"
+            android:textSize="18sp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -146,11 +146,18 @@
 
         <ImageButton
             android:id="@+id/ibEdit"
-            android:layout_width="80dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
             android:background="@drawable/rounded_button"
-            android:src="@drawable/ic_right_arrow" />
+            android:paddingStart="35dp"
+            android:paddingEnd="35dp"
+            android:paddingVertical="15dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_right_arrow"
+            app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
     </LinearLayout>
 
     <LinearLayout
@@ -195,11 +202,18 @@
 
         <ImageButton
             android:id="@+id/ibEditPhone"
-            android:layout_width="80dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
             android:background="@drawable/rounded_button"
-            android:src="@drawable/ic_right_arrow" />
+            android:paddingStart="35dp"
+            android:paddingEnd="35dp"
+            android:paddingVertical="15dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_right_arrow"
+            app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
     </LinearLayout>
 
     <LinearLayout
@@ -211,7 +225,7 @@
         android:layout_marginEnd="45dp"
         android:orientation="horizontal"
         android:background="@drawable/rounded_button"
-        android:alpha="0.5"
+        android:alpha="0.75"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/llEditPhone">
@@ -253,17 +267,24 @@
                 android:fontFamily="@font/tripsans_regular"
                 android:gravity="center_vertical"
                 android:text="Logout"
-                android:textColor="#BD4343"
+                android:textColor="@color/textColor"
                 android:textSize="18sp" />
         </LinearLayout>
 
         <ImageButton
             android:id="@+id/ibLogout"
-            android:layout_width="80dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
             android:background="@drawable/rounded_button"
-            android:src="@drawable/ic_logout_button" />
+            android:paddingStart="35dp"
+            android:paddingEnd="35dp"
+            android:paddingVertical="15dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_right_arrow"
+            app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
     </LinearLayout>
 
     <include layout="@layout/bottom_navigation"/>

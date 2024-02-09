@@ -35,7 +35,7 @@ class EditProfileActivity : AppCompatActivity() {
     private lateinit var etFullName: EditText
     private lateinit var etEmail: EditText
     private lateinit var ibBack: ImageButton
-    private lateinit var bSave: AppCompatButton
+    private lateinit var llSave: LinearLayout
     private var isFullNameValid = false
     private var isEmailValid = false
     private var newAvatarUri: Uri? = null
@@ -53,7 +53,7 @@ class EditProfileActivity : AppCompatActivity() {
         etFullName = findViewById(R.id.etFullName)
         etEmail = findViewById(R.id.etEmail)
         ibBack = findViewById(R.id.ibBack)
-        bSave = findViewById(R.id.bSave)
+        llSave = findViewById(R.id.llSave)
         val avatar = intent.getStringExtra("avatar")
         val name = intent.getStringExtra("full_name")
         val email = intent.getStringExtra("email")
@@ -143,7 +143,7 @@ class EditProfileActivity : AppCompatActivity() {
             alertDialog.show()
         }
 
-        bSave.setOnClickListener {
+        llSave.setOnClickListener {
             val user = hashMapOf<String, String>()
             if (isFullNameValid) {
                 user["full_name"] = etFullName.text.toString()
@@ -198,10 +198,6 @@ class EditProfileActivity : AppCompatActivity() {
     private fun isValid(text: String): Boolean {
         val words = text.trim().split(" ")
         return words.size >= 2 && words.all { it.matches(Regex("[a-zA-Z]+")) }
-    }
-
-    private fun navigateToProfile(newAvatarUri: Uri? = null) {
-        finish()
     }
 
     private fun openImageChooser() {
