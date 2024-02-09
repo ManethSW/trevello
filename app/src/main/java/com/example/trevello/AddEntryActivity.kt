@@ -299,6 +299,7 @@ class AddEntryActivity : AppCompatActivity() {
                 textViewCurrentLocation.text = "Current Location"
             }
         }
+
         if (requestCode == REQUEST_IMAGE_PICK && resultCode == RESULT_OK && data != null) {
             val clipData = data.clipData
             val newImages: MutableList<Bitmap> = mutableListOf()
@@ -307,28 +308,28 @@ class AddEntryActivity : AppCompatActivity() {
                 // Calculate the total number of images (already uploaded + newly selected)
                 val totalImages = images.size + clipData.itemCount
                 // Limit the user to upload up to 3 images only
-                val count = if (totalImages > 3) 3 - images.size else clipData.itemCount
+                val count = if (totalImages > 10) 10 - images.size else clipData.itemCount
                 for (i in 0 until count) {
                     val uri = clipData.getItemAt(i).uri
                     val bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, uri)
                     newImages.add(bitmap)
                 }
-                if (totalImages > 3) {
+                if (totalImages > 10) {
                     // Show a message to the user
-                    showSnackbar("You can only upload up to 3 images.")
+                    showSnackbar("You can only upload up to 10 images.")
                 } else {
                     images.addAll(newImages)
                     imageCarouselAdapter.notifyDataSetChanged()
                 }
             } else {
                 data.data?.let { uri ->
-                    if (images.size < 3) {
+                    if (images.size < 10) {
                         val bitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, uri)
                         images.add(bitmap)
                         imageCarouselAdapter.notifyDataSetChanged()
                     } else {
                         // Show a message to the user
-                        showSnackbar("You can only upload up to 3 images.")
+                        showSnackbar("You can only upload up to 10 images.")
                     }
                 }
             }

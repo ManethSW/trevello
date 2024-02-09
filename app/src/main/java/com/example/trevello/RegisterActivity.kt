@@ -190,7 +190,7 @@ class RegisterActivity : AppCompatActivity() {
                     .get()
                     .addOnSuccessListener { document ->
                         if (document.exists()) {
-                            showSnackbar("Phone number already in use.")
+                            showSnackbar("Phone number already registered.")
                         } else {
                             val options = PhoneAuthOptions.newBuilder(auth)
                                 .setPhoneNumber(phoneNumber)       // Phone number to verify

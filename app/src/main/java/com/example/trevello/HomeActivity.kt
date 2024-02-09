@@ -166,7 +166,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
             if (location != null) {
                 mapFragment.getMapAsync { googleMap ->
                     val currentLatLng = LatLng(location.latitude, location.longitude)
-//                    googleMap.clear() // Clear old markers
+                    // googleMap.clear() // Clear old markers
                     googleMap.addMarker(MarkerOptions().position(currentLatLng).title("Current Location")) // Add a marker for current location
                     googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f)) // Move and zoom the camera to current location
 

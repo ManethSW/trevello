@@ -35,7 +35,6 @@
         <activity
             android:name=".LoginActivity"
             android:theme="@style/Theme.Trevello" />
-
         <activity
             android:name=".RegisterActivity"
             android:theme="@style/Theme.Trevello" />

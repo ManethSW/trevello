@@ -211,7 +211,7 @@ class LoginActivity : AppCompatActivity() {
                 } else {
                     Log.w(ContentValues.TAG, "signInWithCredential:failure", task.exception)
                     if (task.exception is FirebaseAuthInvalidCredentialsException) {
-                        showSnackbar("OTP verification failed. Please try again.")
+                        showSnackbar("Invalid OTP. Please try again.")
                         etOTP1.setText("")
                         etOTP2.setText("")
                         etOTP3.setText("")

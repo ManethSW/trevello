@@ -181,7 +181,7 @@ class EditPhoneNumberActivity: AppCompatActivity() {
                         )
                     }
             } else {
-                showSnackbar("Please enter valid details")
+                showSnackbar("Please enter valid phone number")
             }
         }
 
@@ -226,8 +226,6 @@ class EditPhoneNumberActivity: AppCompatActivity() {
         }
 
         ibBack.setOnClickListener {
-            val intent = Intent(this, ProfileActivity::class.java)
-            startActivity(intent)
             finish()
         }
     }
@@ -238,10 +236,9 @@ class EditPhoneNumberActivity: AppCompatActivity() {
             user.updatePhoneNumber(credential)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
+                        showSnackbar("Processing...")
                         Log.d(ContentValues.TAG, "User phone number updated in Firebase Auth")
-
                         // Update the phone number in the Firestore database
-                        val db = FirebaseFirestore.getInstance()
                         val newPhoneNumber = "+94${etPhoneNumber.text.toString().trimStart('0')}"
                         val userUpdates = hashMapOf<String, Any>("phone_number" to newPhoneNumber)
                         db.collection("users").document(user.uid)
@@ -254,34 +251,31 @@ class EditPhoneNumberActivity: AppCompatActivity() {
                                         .delete()
                                         .addOnSuccessListener {
                                             Log.d(ContentValues.TAG, "Old phone number deleted from registered_phone_numbers collection")
+
+                                            // Add the new phone number to the registered_phone_numbers collection
+                                            db.collection("registered_phone_numbers")
+                                                .document(newPhoneNumber)
+                                                .set(hashMapOf("phone_number" to newPhoneNumber))
+                                                .addOnSuccessListener {
+                                                    Log.d(ContentValues.TAG, "New phone number added to registered_phone_numbers collection")
+                                                    showSnackbar("Phone number updated successfully.")
+                                                    auth.signOut()
+                                                    val intent = Intent(this, LoginActivity::class.java).apply {
+                                                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                                    }
+                                                    val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_left, R.anim.slide_out_right).toBundle()
+                                                    startActivity(intent, options)
+                                                }
+                                                .addOnFailureListener { e ->
+                                                    Log.w(ContentValues.TAG, "Error adding new phone number to collection", e)
+                                                    showSnackbar("Error updating phone number. Please try again.")
+                                                }
                                         }
                                         .addOnFailureListener { e ->
                                             Log.w(ContentValues.TAG, "Error deleting old phone number from collection", e)
+                                            showSnackbar("Error updating phone number. Please try again.")
                                         }
                                 }
-
-                                // Add the new phone number to the registered_phone_numbers collection
-                                db.collection("registered_phone_numbers")
-                                    .document(newPhoneNumber)
-                                    .set(hashMapOf("phone_number" to newPhoneNumber))
-                                    .addOnSuccessListener {
-                                        Log.d(ContentValues.TAG, "New phone number added to registered_phone_numbers collection")
-                                    }
-                                    .addOnFailureListener { e ->
-                                        Log.w(ContentValues.TAG, "Error adding new phone number to collection", e)
-                                    }
-
-                                showSnackbar("Phone number updated successfully")
-
-                                // Sign out the user
-                                FirebaseAuth.getInstance().signOut()
-
-                                // Redirect to MainActivity
-                                val intent = Intent(this, MainActivity::class.java)
-                                val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_left, R.anim.slide_out_right).toBundle()
-                                startActivity(intent, options)
-                                finish()
-                                showSnackbar("Redirecting...")
                             }
                             .addOnFailureListener { e ->
                                 Log.w(ContentValues.TAG, "Error updating phone number in Firestore", e)

@@ -111,8 +111,6 @@ class EditProfileActivity : AppCompatActivity() {
         })
 
         ibBack.setOnClickListener {
-            val intent = Intent(this, ProfileActivity::class.java)
-            startActivity(intent)
             finish()
         }
 
@@ -170,8 +168,7 @@ class EditProfileActivity : AppCompatActivity() {
                         Log.w("EditProfileActivity", "Error writing document", e)
                     }
             }
-
-            navigateToProfile(newAvatarUri)
+            finish()
         }
     }
 
@@ -204,8 +201,6 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     private fun navigateToProfile(newAvatarUri: Uri? = null) {
-        val intent = Intent(this, ProfileActivity::class.java)
-        startActivity(intent)
         finish()
     }
 
