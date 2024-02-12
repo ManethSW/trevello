@@ -8,19 +8,20 @@ import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatButton
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.Target
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -57,11 +58,6 @@ class EditProfileActivity : AppCompatActivity() {
         val avatar = intent.getStringExtra("avatar")
         val name = intent.getStringExtra("full_name")
         val email = intent.getStringExtra("email")
-        val phoneNumber = intent.getStringExtra("phone_no")
-        Log.d(
-            "EditProfileActivity",
-            "Avatar: $avatar, Name: $name, Email: $email, Phone Number: $phoneNumber"
-        )
 
         updateUI(avatar, name, email)
 
@@ -115,31 +111,26 @@ class EditProfileActivity : AppCompatActivity() {
         }
 
         imageView.setOnClickListener {
-            // Inflate the custom layout
             val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_layout, null)
 
-            // Create an AlertDialog.Builder and set the view
             val builder = AlertDialog.Builder(this, R.style.CustomAlertDialog)
             builder.setView(dialogView)
 
-            // Create the AlertDialog
             val alertDialog = builder.create()
 
-            // Get the custom AlertDialog buttons and set their onClickListeners
             val btnTakePhoto = dialogView.findViewById<Button>(R.id.btnTakePhoto)
             val btnChooseFromGallery = dialogView.findViewById<Button>(R.id.btnChooseFromGallery)
 
             btnTakePhoto.setOnClickListener {
                 openCamera()
-                alertDialog.dismiss() // Close the dialog
+                alertDialog.dismiss()
             }
 
             btnChooseFromGallery.setOnClickListener {
                 openImageChooser()
-                alertDialog.dismiss() // Close the dialog
+                alertDialog.dismiss()
             }
 
-            // Show the AlertDialog
             alertDialog.show()
         }
 
@@ -162,14 +153,25 @@ class EditProfileActivity : AppCompatActivity() {
                     .document(auth.currentUser?.uid.toString())
                     .set(user, SetOptions.merge())
                     .addOnSuccessListener {
-                        Log.d("EditProfileActivity", "DocumentSnapshot successfully written!")
+                        showSnackbar("Profile updated successfully!")
+                        finish()
                     }
-                    .addOnFailureListener { e ->
-                        Log.w("EditProfileActivity", "Error writing document", e)
+                    .addOnFailureListener {
+                        showSnackbar("Error updating profile")
                     }
             }
-            finish()
         }
+    }
+
+    private fun showSnackbar(message: String) {
+        val snackbar =
+            Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG)
+        val params = snackbar.view.layoutParams as FrameLayout.LayoutParams
+
+        params.gravity = Gravity.TOP
+        snackbar.view.layoutParams = params
+        snackbar.show()
+        snackbar.view.postDelayed({ snackbar.dismiss() }, 4000)
     }
 
     private fun updateUI(avatar: String?, name: String?, email: String?) {

@@ -241,46 +241,36 @@ class EditPhoneNumberActivity: AppCompatActivity() {
                             // Update the phone number in the Firestore database
                             val newPhoneNumber = "+94${etPhoneNumber.text.toString().trimStart('0')}"
                             val userUpdates = hashMapOf<String, Any>("phone_number" to newPhoneNumber)
-                            db.collection("users").document(user.uid)
-                                .update(userUpdates)
-                                .addOnSuccessListener {
-                                    // Delete the old phone number from the registered_phone_numbers collection
-                                    if (phone_no != null) {
-                                        val oldPhoneNumber = "+94$phone_no"
-                                        db.collection("registered_phone_numbers").document(oldPhoneNumber)
-                                            .delete()
-                                            .addOnSuccessListener {
-                                                Log.d(ContentValues.TAG, "Old phone number deleted from registered_phone_numbers collection")
 
-                                                // Add the new phone number to the registered_phone_numbers collection
-                                                db.collection("registered_phone_numbers")
-                                                    .document(newPhoneNumber)
-                                                    .set(hashMapOf("phone_number" to newPhoneNumber))
-                                                    .addOnSuccessListener {
-                                                        Log.d(ContentValues.TAG, "New phone number added to registered_phone_numbers collection")
-                                                        showSnackbar("Phone number updated successfully.")
-                                                        auth.signOut()
-                                                        val intent = Intent(this, LoginActivity::class.java).apply {
-                                                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                                                        }
-                                                        val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_left, R.anim.slide_out_right).toBundle()
-                                                        startActivity(intent, options)
-                                                    }
-                                                    .addOnFailureListener { e ->
-                                                        Log.w(ContentValues.TAG, "Error adding new phone number to collection", e)
-                                                        showSnackbar("Error updating phone number. Please try again.")
-                                                    }
-                                            }
-                                            .addOnFailureListener { e ->
-                                                Log.w(ContentValues.TAG, "Error deleting old phone number from collection", e)
-                                                showSnackbar("Error updating phone number. Please try again.")
-                                            }
-                                    }
+                            db.runTransaction { transaction ->
+                                val userDocRef = db.collection("users").document(user.uid)
+                                transaction.update(userDocRef, userUpdates)
+
+                                // Delete the old phone number from the registered_phone_numbers collection
+                                if (phone_no != null) {
+                                    val oldPhoneNumber = "+94$phone_no"
+                                    val oldPhoneDocRef = db.collection("registered_phone_numbers").document(oldPhoneNumber)
+                                    transaction.delete(oldPhoneDocRef)
                                 }
-                                .addOnFailureListener { e ->
-                                    Log.w(ContentValues.TAG, "Error updating phone number in Firestore", e)
-                                    showSnackbar("Error updating phone number. Please try again.")
+
+                                // Add the new phone number to the registered_phone_numbers collection
+                                val newPhoneDocRef = db.collection("registered_phone_numbers").document(newPhoneNumber)
+                                transaction.set(newPhoneDocRef, hashMapOf("phone_number" to newPhoneNumber))
+
+                                null
+                            }.addOnSuccessListener {
+                                Log.d(ContentValues.TAG, "Transaction success!")
+                                showSnackbar("Phone number updated successfully.")
+                                auth.signOut()
+                                val intent = Intent(this, LoginActivity::class.java).apply {
+                                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                                 }
+                                val options = ActivityOptions.makeCustomAnimation(this, R.anim.slide_in_left, R.anim.slide_out_right).toBundle()
+                                startActivity(intent, options)
+                            }.addOnFailureListener { e ->
+                                Log.w(ContentValues.TAG, "Transaction failure.", e)
+                                showSnackbar("Error updating phone number. Please try again.")
+                            }
                         } else {
                             showSnackbar("Phone number update failed. Please try again.")
                             etOTP1.setText("")

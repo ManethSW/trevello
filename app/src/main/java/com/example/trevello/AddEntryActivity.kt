@@ -223,22 +223,11 @@ class AddEntryActivity : AppCompatActivity() {
         }
 
         llAdd.setOnClickListener {
-            // Check if any of the data is empty
-            // Log the data
-            Log.d("AddEntryActivity", "Location: $location")
-            Log.d("AddEntryActivity", "Address: $address")
-            Log.d("AddEntryActivity", "Title: $title")
-            Log.d("AddEntryActivity", "Description: $description")
-            Log.d("AddEntryActivity", "Images: $images")
-
             if (location == null || address.isNullOrEmpty() || title.isNullOrEmpty() || description.isNullOrEmpty() || images.isEmpty()) {
-                // Show a Snackbar message if any data is empty
                 showSnackbar("Please fill in all the fields and upload at least one image.")
             } else {
-                // Show a Snackbar message indicating the start of the upload process
                 showSnackbar("Uploading your new entry...")
 
-                // Upload images to Firebase Storage
                 val imageUrls = mutableListOf<String>()
                 images.forEachIndexed { index, bitmap ->
                     val baos = ByteArrayOutputStream()
@@ -250,13 +239,10 @@ class AddEntryActivity : AppCompatActivity() {
 
                     val uploadTask = imagesRef.putBytes(data)
                     uploadTask.addOnFailureListener {
-                        // Show a Snackbar message if the upload fails
                         showSnackbar("Failed to upload image.")
                     }.addOnSuccessListener {
-                        // Get the download URL
                         imagesRef.downloadUrl.addOnSuccessListener { uri ->
                             imageUrls.add(uri.toString())
-                            // If all images are uploaded, store the data in Firestore
                             if (imageUrls.size == images.size) {
                                 val entry = hashMapOf(
                                     "location" to GeoPoint(location!!.latitude, location!!.longitude),
@@ -265,23 +251,16 @@ class AddEntryActivity : AppCompatActivity() {
                                     "description" to description,
                                     "images" to imageUrls
                                 )
-
-                                // Get the UID of the currently logged-in user
                                 val uid = auth.currentUser?.uid
-
-                                // Add a new document with a generated ID
                                 db.collection("users").document(uid!!).collection("entries")
                                     .add(entry)
                                     .addOnSuccessListener {
-                                        // Show a Snackbar message when the document is successfully added
                                         showSnackbar("Entry added successfully.")
-                                        // Redirect to the Home page
                                         val intent = Intent(this, HomeActivity::class.java)
                                         startActivity(intent)
                                         finish()
                                     }
-                                    .addOnFailureListener { e ->
-                                        // Show a Snackbar message if there's an error adding the document
+                                    .addOnFailureListener {
                                         showSnackbar("Error adding entry.")
                                     }
                             }
@@ -313,8 +292,8 @@ class AddEntryActivity : AppCompatActivity() {
                     address = fullAddress
                 }
                 val textView = llSetLocation.getChildAt(1) as TextView
-                val truncatedAddress = if (address!!.length > 30) {
-                    address!!.substring(0, 30) + "..."
+                val truncatedAddress = if (address!!.length > 50) {
+                    address!!.substring(0, 50) + "..."
                 } else {
                     address
                 }

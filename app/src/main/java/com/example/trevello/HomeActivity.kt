@@ -2,7 +2,6 @@ package com.example.trevello
 
 import MarkerInfoDialogFragment
 import android.Manifest
-import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -13,8 +12,8 @@ import android.graphics.Canvas
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
-import android.os.Looper
-import android.util.Log
+import android.view.Gravity
+import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -30,15 +29,21 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Locale
 
 
 class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
+    private lateinit var tvCurrentLocation: TextView
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var googleMap: GoogleMap? = null
     private var currentLocation: Location? = null
+
+    companion object {
+        private const val TAG = "HomeActivity"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +58,6 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         val entriesRef = db.collection("users").document(uid!!).collection("entries")
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-
         fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
             currentLocation = location
         }
@@ -63,58 +67,40 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync { googleMap ->
             this.googleMap = googleMap
             try {
-                // Check if the current theme is dark
                 val isDarkTheme =
                     resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
 
-                // If the current theme is dark, apply the dark map style
                 if (isDarkTheme) {
-                    val success = googleMap.setMapStyle(
+                    googleMap.setMapStyle(
                         MapStyleOptions.loadRawResourceStyle(
                             this, R.raw.dark_map_style
                         )
                     )
-
-                    if (!success) {
-                        Log.e(TAG, "Style parsing failed.")
-                    }
                 }
             } catch (e: Resources.NotFoundException) {
-                Log.e(TAG, "Can't find style. Error: ", e)
+                showSnackbar("Error: Can't find style. Error: $e")
             }
 
-            // Start location updates
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED
-            ) {
+            if (checkLocationPermission()) {
                 startLocationUpdates()
+            } else {
+                requestLocationPermission()
             }
 
-            // Listen to Firestore updates
             entriesRef.addSnapshotListener { snapshot, e ->
                 if (e != null) {
-                    Log.w(TAG, "Listen failed.", e)
+                    showSnackbar("Error getting entries")
                     return@addSnapshotListener
                 }
 
-                if (snapshot != null && googleMap != null) {
-                    // Clear existing markers
-                    googleMap!!.clear()
-
-                    // Iterate over the documents in the snapshot
+                if (snapshot != null) {
                     for (document in snapshot.documents) {
-                        // Get the location and title of the entry
                         val location = document.getGeoPoint("location")
                         val title = document.getString("title")
 
-                        // Log the location and title
-                        Log.d(TAG, "Location: $location, Title: $title")
-
-                        // Create a LatLng object from the location
                         val latLng = LatLng(location!!.latitude, location.longitude)
 
-                        // Add a marker to the map at the LatLng position with the title
-                        val marker = googleMap!!.addMarker(
+                        val marker = googleMap.addMarker(
                             MarkerOptions()
                                 .position(latLng)
                                 .title(title)
@@ -129,17 +115,16 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                     googleMap.setOnMarkerClickListener { marker ->
                         val tag = marker.tag
                         if (tag == null) {
-                            Log.w(TAG, "Marker tag is null")
                             return@setOnMarkerClickListener true
                         } else {
                             val documentId = tag as String
                             entriesRef.document(documentId).get().addOnSuccessListener { document ->
                                 val title = document.getString("title")
                                 val location =
-                                    document.getString("address") // Assuming the document has a "location" field
+                                    document.getString("address")
                                 val description = document.getString("description")
                                 val images =
-                                    document.get("images") as ArrayList<String> // Use get method to retrieve the ArrayList
+                                    document.get("images") as ArrayList<String>
                                 val dialog = MarkerInfoDialogFragment.newInstance(
                                     title!!,
                                     location!!,
@@ -149,16 +134,14 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                                 dialog.show(
                                     supportFragmentManager,
                                     "MarkerInfoDialogFragment"
-                                ) // Make sure to pass the required parameters to the show method
+                                )
                             }
                             val cameraUpdate =
                                 CameraUpdateFactory.newLatLngZoom(marker.position, 12f)
-                            googleMap!!.moveCamera(cameraUpdate)
+                            googleMap.moveCamera(cameraUpdate)
                         }
                         true
                     }
-                } else {
-                    Log.d(TAG, "Current data: null")
                 }
             }
         }
@@ -170,7 +153,6 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.menu_home -> {
-                    // Respond to navigation item 1 click
                     true
                 }
 
@@ -190,17 +172,6 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 else -> false
             }
-        }
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            // Request location permission
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                1
-            )
         }
     }
 
@@ -230,21 +201,27 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                     )
                 )
 
-                // Update the TextView with the current location
-                val tvCurrentLocation = findViewById<TextView>(R.id.tvCurrentLocation)
-
-                // Use Geocoder to get the location name
+                tvCurrentLocation = findViewById(R.id.tvCurrentLocation)
                 val geocoder = Geocoder(this@HomeActivity, Locale.getDefault())
                 val addresses =
                     geocoder.getFromLocation(it.latitude, it.longitude, 1)
                 val cityName = addresses?.get(0)?.locality
                 val streetName = addresses?.get(0)?.thoroughfare
-                tvCurrentLocation.text = "$streetName, $cityName"
-
-                // Log data to console
-                Log.d(TAG, "Current location: $streetName, $cityName")
+                val finalAddress = "$streetName, $cityName"
+                tvCurrentLocation.text = finalAddress
             }
         }
+    }
+
+    private fun showSnackbar(message: String) {
+        val snackbar =
+            Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_LONG)
+        val params = snackbar.view.layoutParams as FrameLayout.LayoutParams
+
+        params.gravity = Gravity.TOP
+        snackbar.view.layoutParams = params
+        snackbar.show()
+        snackbar.view.postDelayed({ snackbar.dismiss() }, 4000)
     }
 
     private fun BitmapFromVector(context: Context, vectorResId: Int): BitmapDescriptor? {
@@ -266,6 +243,17 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 
+    private fun checkLocationPermission() =
+        ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+
+    private fun requestLocationPermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+            1
+        )
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
@@ -274,8 +262,6 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 1) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                supportFragmentManager
-                    .findFragmentById(R.id.map) as SupportMapFragment
                 startLocationUpdates()
             }
         }
@@ -283,10 +269,5 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
-    }
-
-
-    companion object {
-        private const val TAG = "HomeActivity"
     }
 }

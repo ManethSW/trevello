@@ -148,7 +148,9 @@ class ProfileActivity : AppCompatActivity() {
                 full_name = snapshot.getString("full_name")
                 email = snapshot.getString("email")
                 phone_no = snapshot.getString("phone_number")
-                updateUI(avatar, full_name, email)
+                if (!isDestroyed) {
+                    updateUI(avatar, full_name, email)
+                }
             } else {
                 Log.d("ProfileActivity", "Current data: null")
             }

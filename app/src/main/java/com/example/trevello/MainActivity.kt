@@ -21,10 +21,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Initialize Firebase Auth
         auth = FirebaseAuth.getInstance()
 
-        // Check if user is signed in (non-null) and update UI accordingly.
+        // Check if user is signed
         val currentUser = auth.currentUser
         updateUI(currentUser)
 
@@ -58,7 +57,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent, options)
             Handler(Looper.getMainLooper()).postDelayed({
                 finish()
-            }, 500) // Delay finish() to allow the animation to complete. Adjust the delay time as needed.
+            }, 500)
         }
 
         loginButton.setOnClickListener {
@@ -67,13 +66,11 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent, options)
             Handler(Looper.getMainLooper()).postDelayed({
                 finish()
-            }, 500) // Delay finish() to allow the animation to complete. Adjust the delay time as needed.
+            }, 500)
         }
     }
     private fun updateUI(currentUser: FirebaseUser?) {
         if (currentUser != null) {
-            // User is signed in, navigate to the HomeActivity
-//            val intent = Intent(this, ProfileActivity::class.java)
             val intent = Intent(this, HomeActivity::class.java)
             startActivity(intent)
             finish()
