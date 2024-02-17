@@ -12,6 +12,7 @@ import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
 import android.view.Gravity
+import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -268,5 +269,8 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         this.googleMap = googleMap
+
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        mapFragment.view?.findViewWithTag<View>("GoogleWatermark")?.visibility = View.GONE
     }
 }

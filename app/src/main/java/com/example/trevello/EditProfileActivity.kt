@@ -203,8 +203,11 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     private fun openImageChooser() {
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "image/*"
+            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+        }
         startActivityForResult(intent, IMAGE_PICK_CODE)
     }
 

@@ -15,7 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="200dp"
         android:layout_alignParentTop="true"
-        android:src="@drawable/trevello_logo"
+        android:src="@drawable/travello_logo"
         android:contentDescription="@string/logo_desc"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
