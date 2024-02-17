@@ -18,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/tripsans_bold"
-        android:text="Vacation to Sri Lanka for christmas"
+        android:text="Title"
         android:layout_marginTop="30dp"
         android:layout_marginHorizontal="30dp"
         android:textColor="@color/textColor"
@@ -49,9 +49,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:fontFamily="@font/tripsans_bold"
-                android:text="Amphitheatre Parkway, Mountain View"
-                android:layout_gravity="center_vertical"
-                android:gravity="center"
+                android:text="location"
+                android:layout_gravity="start"
+                android:gravity="center_vertical"
+                android:layout_marginStart="10dp"
                 android:textColor="@color/textColor"
                 android:textSize="16sp" />
     </LinearLayout>
@@ -64,8 +65,7 @@
         android:background="@drawable/rounded_description_container"
         android:layout_marginHorizontal="30dp"
         android:gravity="start"
-        android:layout_gravity="top"
-        android:layout_alignParentBottom="true">
+        android:layout_gravity="top">
 
         <TextView
             android:id="@+id/tvEntryDescription"

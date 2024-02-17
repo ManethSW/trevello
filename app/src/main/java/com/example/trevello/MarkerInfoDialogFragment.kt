@@ -1,13 +1,10 @@
-// MarkerInfoDialogFragment.kt
+package com.example.trevello// com.example.trevello.MarkerInfoDialogFragment.kt
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
-import com.example.trevello.R
-import com.example.trevello.UrlImageCarouselAdapter
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class MarkerInfoDialogFragment : BottomSheetDialogFragment() {
@@ -26,9 +23,11 @@ class MarkerInfoDialogFragment : BottomSheetDialogFragment() {
         tvEntryDescription = view.findViewById(R.id.tvEntryDescription)
         vpEntryImages = view.findViewById(R.id.vpEntryImages)
 
-        // Retrieve the values from the arguments
         val title = arguments?.getString("title")
-        val location = arguments?.getString("location")
+        var location = arguments?.getString("location")
+        if (location != null && location.length > 30) {
+            location = location.substring(0, 30) + "..."
+        }
         val description = arguments?.getString("description")
         val images = arguments?.getStringArrayList("images")
 

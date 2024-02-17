@@ -1,6 +1,5 @@
 package com.example.trevello
 
-import MarkerInfoDialogFragment
 import android.Manifest
 import android.content.Context
 import android.content.Intent
@@ -133,7 +132,7 @@ class HomeActivity : AppCompatActivity(), OnMapReadyCallback {
                                 )
                                 dialog.show(
                                     supportFragmentManager,
-                                    "MarkerInfoDialogFragment"
+                                    "com.example.trevello.MarkerInfoDialogFragment"
                                 )
                             }
                             val cameraUpdate =
